@@ -6,5 +6,9 @@
 
 LOCAL_PATH := $(call my-dir)
 
+include $(LOCAL_PATH)/meson_dbus.mk
+include $(LOCAL_PATH)/meson_glib.mk
 include $(LOCAL_PATH)/meson_mesa3d.mk
 include $(LOCAL_PATH)/meson_libcamera.mk
+include $(LOCAL_PATH)/meson_libqmi.mk
+include $(LOCAL_PATH)/meson_modemmanager.mk
