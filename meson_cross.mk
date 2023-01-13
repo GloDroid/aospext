@@ -51,7 +51,9 @@ $(MESON_GEN_FILES_TARGET): $(AOSP_FLAGS_DIR_OUT)/.sharedlib.timestamp
 	rm -rf $(MESON_GEN_DIR)
 	mkdir -p $(MESON_GEN_DIR)
 
-	cp $(MY_ABS_PATH)/tools/aospext_cc $(dir $(MESON_GEN_DIR))/aospext_cc
+	cp $(MY_ABS_PATH)/tools/wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrapper.sh
+	ln -sf ./wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrap_c
+	ln -sf ./wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrap_cxx
 	cp $(MY_ABS_PATH)/tools/gen_aospless_dir.py $(dir $(MESON_GEN_DIR))/gen_aospless_dir.py
 
 	cp $(MY_ABS_PATH)/tools/makefile_base.mk $(dir $(MESON_GEN_DIR))/Makefile

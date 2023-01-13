@@ -94,29 +94,31 @@ def process_copy_linkflags(in_file, out_object_files):
 	out_file.write(out_text)
 	out_file.close()
 
-os.system("mkdir -p " + AOSPLESS_OUT_DIR + "/build_flags");
+os.system("mkdir -p " + AOSPLESS_OUT_DIR + "/toolchain_wrapper");
 os.system("mkdir -p " + AOSPLESS_OUT_DIR + "/objs");
 os.system("mkdir -p " + AOSPLESS_OUT_DIR + "/gen");
 os.system("rsync gen/* " + AOSPLESS_OUT_DIR + "/gen");
 
-for file in ['aospext_cc', 'project_specific.mk']:
+for file in ['project_specific.mk']:
 	os.system("cp " + file + " " + AOSPLESS_OUT_DIR)
 
 os.system("echo AOSPLESS:=true > " + AOSPLESS_OUT_DIR + "/Makefile")
 os.system("cat Makefile >> " + AOSPLESS_OUT_DIR + "/Makefile")
 
-os.system("echo clang > " + AOSPLESS_OUT_DIR + "/build_flags/exec.cc")
-os.system("echo clang > " + AOSPLESS_OUT_DIR + "/build_flags/sharedlib.cc")
-os.system("echo clang++ > " + AOSPLESS_OUT_DIR + "/build_flags/exec.cxx")
-os.system("echo clang++ > " + AOSPLESS_OUT_DIR + "/build_flags/sharedlib.cxx")
+os.system("cp -P toolchain_wrapper/wrap* " + AOSPLESS_OUT_DIR + "/toolchain_wrapper")
 
-process_copy_cflags("build_flags/exec.cflags", include_dirs)
-process_copy_cflags("build_flags/exec.cppflags", include_dirs)
-process_copy_cflags("build_flags/sharedlib.cflags", include_dirs)
-process_copy_cflags("build_flags/sharedlib.cppflags", include_dirs)
+os.system("echo clang > " + AOSPLESS_OUT_DIR + "/toolchain_wrapper/exec.cc")
+os.system("echo clang > " + AOSPLESS_OUT_DIR + "/toolchain_wrapper/sharedlib.cc")
+os.system("echo clang++ > " + AOSPLESS_OUT_DIR + "/toolchain_wrapper/exec.cxx")
+os.system("echo clang++ > " + AOSPLESS_OUT_DIR + "/toolchain_wrapper/sharedlib.cxx")
 
-process_copy_linkflags("build_flags/exec.link_args", objects)
-process_copy_linkflags("build_flags/sharedlib.link_args", objects)
+process_copy_cflags("toolchain_wrapper/exec.cflags", include_dirs)
+process_copy_cflags("toolchain_wrapper/exec.cppflags", include_dirs)
+process_copy_cflags("toolchain_wrapper/sharedlib.cflags", include_dirs)
+process_copy_cflags("toolchain_wrapper/sharedlib.cppflags", include_dirs)
+
+process_copy_linkflags("toolchain_wrapper/exec.link_args", objects)
+process_copy_linkflags("toolchain_wrapper/sharedlib.link_args", objects)
 
 copy_includes(include_dirs)
 

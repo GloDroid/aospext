@@ -26,7 +26,7 @@ OUT_GEN_DIR:=$(OUT_BASE_DIR)/gen
 
 PATCHES:=$(foreach dir,$(PATCHES_DIRS), $(sort $(shell find -L $(AOSP_ROOT)/$(dir)/*.patch -not -path '*/\.*')))
 
-.PHONY: help cleanup all copy patch configure build install src_patch src_unpatch src_gen_pathes
+.PHONY: help cleanup copy patch configure build install
 .DEFAULT_GOAL = help
 SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c

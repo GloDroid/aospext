@@ -6,36 +6,17 @@
 #
 # Copyright (C) 2021-2022 Roman Stratiienko (r.stratiienko@gmail.com)
 
-usage() { echo "Usage: $0 -c (c or cxx) -d dir_to_build_flags <cc_args>" 1>&2; exit 1; }
-
-while getopts ":c:d:" o; do
-    case "${o}" in
-        c)
-            COMPILER=${OPTARG}
-            ((COMPILER == "c" || COMPILER == "cxx")) || usage
-            ;;
-        d)
-            FLAGSDIR=${OPTARG}
-            ;;
-        *)
-            break;
-            ;;
-    esac
-done
-
-if [ -z "${COMPILER}" ] || [ -z "${FLAGSDIR}" ]; then
-    usage
-fi
-
-shift 4
+COMPILER=$( basename -- "$0"; )
+LOCAL_PATH=$( dirname -- "$0"; )
+BASE_DIR=$( cd -- "${LOCAL_PATH}/.."; pwd; )
 
 extract_flags() {
     # $1 - Flag files prefix (sharedlib or exec)
-    CC=$(cat ${FLAGSDIR}/$1.cc)
-    CXX=$(cat ${FLAGSDIR}/$1.cxx)
-    CFLAGS=$(cat ${FLAGSDIR}/$1.cflags)
-    CPPFLAGS=$(cat ${FLAGSDIR}/$1.cppflags)
-    LINK_ARGS=$(cat ${FLAGSDIR}/$1.link_args)
+    CC=$(cat ${LOCAL_PATH}/$1.cc)
+    CXX=$(cat ${LOCAL_PATH}/$1.cxx)
+    CFLAGS=$(cat ${LOCAL_PATH}/$1.cflags)
+    CPPFLAGS=$(cat ${LOCAL_PATH}/$1.cppflags)
+    LINK_ARGS=$(cat ${LOCAL_PATH}/$1.link_args)
 }
 
 if [[ " $@ " =~ .*\ -shared\ .* ]]; then
@@ -44,12 +25,14 @@ else
     extract_flags exec
 fi
 
-if [ "${COMPILER}" == "c" ]; then
+if [ "${COMPILER}" == "wrap_c" ]; then
     ARGS="${CC} $@"
-else
+elif [ "${COMPILER}" == "wrap_cxx" ]; then
     ARGS="${CXX} $@"
+else
+    echo "Unknown compiler: ${COMPILER}"
+    exit 1
 fi
-
 
 ARGS="${ARGS/\[C_ARGS\]/${CFLAGS}}"
 ARGS="${ARGS/\[CPP_ARGS\]/${CPPFLAGS}}"
