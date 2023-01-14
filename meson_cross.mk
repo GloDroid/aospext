@@ -21,6 +21,7 @@ MESON_PATCHES_DIRS                       := $(BOARD_$(AOSPEXT_PROJECT_NAME)_PATC
 MESON_GEN_FILES_TARGET                   := $(AOSPEXT_OUT_DIR)/.timestamp
 
 $(MESON_GEN_FILES_TARGET): MESON_CPU_FAMILY   := $(subst arm64,aarch64,$(TARGET_$(AOSPEXT_ARCH_PREFIX)ARCH))
+$(MESON_GEN_FILES_TARGET): MESON_RUST_TARGET  := $(subst arm64,aarch64,$(TARGET_$(AOSPEXT_ARCH_PREFIX)ARCH))-linux-android
 $(MESON_GEN_FILES_TARGET): AOSP_FLAGS_DIR_OUT := $(call relative-to-absolute,$(AOSP_FLAGS_DIR_OUT))
 $(MESON_GEN_FILES_TARGET): MESON_OUT_SRC_DIR  := $(call relative-to-absolute,$(AOSPEXT_OUT_DIR)/out_src)
 $(MESON_GEN_FILES_TARGET): MESON_BUILD_DIR    := $(call relative-to-absolute,$(AOSPEXT_OUT_DIR)/build)
@@ -42,6 +43,7 @@ $(MESON_GEN_FILES_TARGET): AR_TOOL:=$($($(AOSPEXT_ARCH_PREFIX))TARGET_AR)
 AOSPEXT_TOOLS := $(sort $(shell find -L $(MY_PATH)/tools -not -path '*/\.*'))
 MESON_SRCS := $(sort $(shell find -L $(MESON_SRC_PATH) -not -path '*/\.*'))
 MESON_PATCHES := $(if $(MESON_PATCHES_DIRS),$(sort $(shell find -L $(MESON_PATCHES_DIRS) -not -path '*/\.*')))
+RUST_BIN_DIR_ABS := $(if $(RUST_BIN_DIR),$(shell cd $(RUST_BIN_DIR) && pwd),$(HOME)/.cargo/bin)
 
 $(MESON_GEN_FILES_TARGET): $(MESON_SRCS) $(MESON_PATCHES) $(AOSPEXT_TOOLS)
 $(MESON_GEN_FILES_TARGET): MESON_PATCHES_DIRS:=$(MESON_PATCHES_DIRS)
@@ -54,6 +56,7 @@ $(MESON_GEN_FILES_TARGET): $(AOSP_FLAGS_DIR_OUT)/.sharedlib.timestamp
 	cp $(MY_ABS_PATH)/tools/wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrapper.sh
 	ln -sf ./wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrap_c
 	ln -sf ./wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrap_cxx
+	ln -sf ./wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrap_rust_ld
 	cp $(MY_ABS_PATH)/tools/gen_aospless_dir.py $(dir $(MESON_GEN_DIR))/gen_aospless_dir.py
 
 	cp $(MY_ABS_PATH)/tools/makefile_base.mk $(dir $(MESON_GEN_DIR))/Makefile
@@ -77,6 +80,7 @@ $(MESON_GEN_FILES_TARGET): $(AOSP_FLAGS_DIR_OUT)/.sharedlib.timestamp
 		-e 's#$$(AR_TOOL)#$(AR_TOOL)#g' \
 		-e 's#$$(MY_ABS_PATH)#$(MY_ABS_PATH)#g' \
 		-e 's#$$(MESON_CPU_FAMILY)#$(MESON_CPU_FAMILY)#g' \
+		-e 's#$$(MESON_RUST_TARGET)#$(MESON_RUST_TARGET)#g' \
 		$(MESON_GEN_DIR)/aosp_cross
 
 	# Prepare package info files
@@ -89,6 +93,6 @@ ifneq ($(MESON_GEN_LLVM_STUB),)
 		"has_rtti = false\n" > $(dir $@)/subprojects/llvm/meson.build
 endif
 	# Build meson project
-	PATH=/usr/bin:/bin:/sbin:$$PATH make -C $(dir $(MESON_GEN_DIR)) install
+	export $$(cat /etc/environment):$(RUST_BIN_DIR_ABS) && make -C $(dir $(MESON_GEN_DIR)) install
 
 	touch $@
