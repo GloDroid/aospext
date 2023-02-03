@@ -13,8 +13,10 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
+GLIB_VERSION = $(shell cat $(BOARD_GLIB_SRC_DIR)/meson.build | grep -o "\<version\>\s*:\s*'\w*\.\w*\.\w*'" | grep -o "\w*\.\w*\.\w*" | head -1)
+
 LOCAL_SHARED_LIBRARIES := libc libglib-2.0 libgobject-2.0 libudev
-MESON_GEN_PKGCONFIGS := glib-2.0:2.75.1 gobject-2.0:2.75.1 libudev:199
+MESON_GEN_PKGCONFIGS := glib-2.0:$(GLIB_VERSION) gobject-2.0:$(GLIB_VERSION) libudev:199
 
 MESON_BUILD_ARGUMENTS := \
 

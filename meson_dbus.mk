@@ -13,8 +13,10 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
+GLIB_VERSION = $(shell cat $(BOARD_GLIB_SRC_DIR)/meson.build | grep -o "\<version\>\s*:\s*'\w*\.\w*\.\w*'" | grep -o "\w*\.\w*\.\w*" | head -1)
+
 LOCAL_SHARED_LIBRARIES := libc libexpat libglib-2.0 libgio-2.0 libgobject-2.0
-MESON_GEN_PKGCONFIGS := expat glib-2.0:2.75.1 gio-unix-2.0:2.75.1
+MESON_GEN_PKGCONFIGS := expat glib-2.0:$(GLIB_VERSION) gio-unix-2.0:$(GLIB_VERSION)
 
 MESON_BUILD_ARGUMENTS := \
     -Ddbus_session_bus_listen_address=3440
