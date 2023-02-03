@@ -14,9 +14,10 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 GLIB_VERSION = $(shell cat $(BOARD_GLIB_SRC_DIR)/meson.build | grep -o "\<version\>\s*:\s*'\w*\.\w*\.\w*'" | grep -o "\w*\.\w*\.\w*" | head -1)
+LIBQMI_VERSION = $(shell cat $(BOARD_LIBQMI_SRC_DIR)/meson.build | grep -o "\<version\>\s*:\s*'\w*\.\w*\.\w*'" | grep -o "\w*\.\w*\.\w*" | head -1)
 
 LOCAL_SHARED_LIBRARIES := libc libexpat libglib-2.0 libgio-2.0 libgobject-2.0 libgmodule-2.0 libdbus-1 libqmi-glib libgudev-1.0
-MESON_GEN_PKGCONFIGS := glib-2.0:$(GLIB_VERSION) gmodule-2.0:$(GLIB_VERSION) gobject-2.0:$(GLIB_VERSION) gio-2.0:$(GLIB_VERSION) gio-unix-2.0:$(GLIB_VERSION) dbus-1 qmi-glib:1.33.2 gudev-1.0:232
+MESON_GEN_PKGCONFIGS := glib-2.0:$(GLIB_VERSION) gmodule-2.0:$(GLIB_VERSION) gobject-2.0:$(GLIB_VERSION) gio-2.0:$(GLIB_VERSION) gio-unix-2.0:$(GLIB_VERSION) dbus-1 qmi-glib:$(LIBQMI_VERSION) gudev-1.0:232
 
 MESON_BUILD_ARGUMENTS := \
     -Dmbim=false \
