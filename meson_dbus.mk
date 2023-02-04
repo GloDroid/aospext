@@ -25,8 +25,6 @@ MESON_BUILD_ARGUMENTS := \
 MESON_BUILD_ARGUMENTS += \
     -Ddbus_user=root
 
-DBUS_VERSION := $(shell cat $(MESON_SRC_PATH)/meson.build | grep -o "\<version\>\s*:\s*'\w*\.\w*\.\w*'" | grep -o "\w*\.\w*\.\w*" | head -1)
-
 TMP_OUT_BIN := dbus-cleanup-sockets dbus-daemon dbus-daemon-launch-helper dbus-launch dbus-monitor dbus-run-session dbus-send dbus-test-tool dbus-update-activation-environment dbus-uuidgen
 
 # Format: TYPE:REL_PATH_TO_INSTALL_ARTIFACT:VENDOR_SUBDIR:MODULE_NAME:SYMLINK_SUFFIX
