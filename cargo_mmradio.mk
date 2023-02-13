@@ -3,7 +3,7 @@
 # AOSPEXT project (https://github.com/GloDroid/aospext)
 #
 # Copyright (C) 2021 GlobalLogic Ukraine
-# Copyright (C) 2021-2022 Roman Stratiienko (r.stratiienko@gmail.com)
+# Copyright (C) 2021-2023 Roman Stratiienko (r.stratiienko@gmail.com)
 
 AOSPEXT_PROJECT_NAME := MMRADIO
 
@@ -28,34 +28,11 @@ LOCAL_SHARED_LIBRARIES := \
     android.hardware.radio.sim-V1-ndk \
     android.hardware.radio.voice-V1-ndk \
 
-MESON_GEN_PKGCONFIGS := \
-    android_base \
-    android_binder_ndk \
-    android_cutils \
-    android_log \
-    android_utils \
-    android.hardware.radio-V1-ndk \
-    android.hardware.radio.config-V1-ndk \
-    android.hardware.radio.data-V1-ndk \
-    android.hardware.radio.messaging-V1-ndk \
-    android.hardware.radio.modem-V1-ndk \
-    android.hardware.radio.network-V1-ndk \
-    android.hardware.radio.sim-V1-ndk \
-    android.hardware.radio.voice-V1-ndk \
-
 LOCAL_SHARED_LIBRARIES += \
     libglib-2.0 \
     libgio-2.0 \
     libgobject-2.0 \
     libmm-glib \
-
-MESON_GEN_PKGCONFIGS += \
-    glib-2.0:2.75.1 \
-    gmodule-2.0:2.75.1 \
-    gobject-2.0:2.75.1 \
-    mm-glib:1.21.1 \
-
-MESON_BUILD_ARGUMENTS := \
 
 # Format: TYPE:REL_PATH_TO_INSTALL_ARTIFACT:VENDOR_SUBDIR:MODULE_NAME:SYMLINK_SUFFIX
 # TYPE one of: lib, bin, etc
@@ -67,8 +44,8 @@ AOSPEXT_GEN_TARGETS := \
 
 # Build first ARCH only
 LOCAL_MULTILIB := first
-include $(LOCAL_PATH)/meson_cross.mk
-AOSPEXT_TARGETS_DEP:=$(MESON_GEN_FILES_TARGET)
+include $(LOCAL_PATH)/cargo_cross.mk
+AOSPEXT_TARGETS_DEP:=$(CARGO_GEN_FILES_TARGET)
 AOSPEXT_PROJECT_INSTALL_DIR:=$(dir $(AOSPEXT_TARGETS_DEP))/install
 AOSPEXT_PROJECT_OUT_INCLUDE_DIR:=
 include $(LOCAL_PATH)/aospext_gen_targets.mk
