@@ -57,8 +57,13 @@ copy:
 patch: ## Patch sources in intermediate directory
 patch: $(PATCH_TARGET)
 $(PATCH_TARGET): copy
+ifneq ($(wildcard $(SRC_DIR)/_aospext_patched),)
+	@echo "Sources are already patched, skip patching..."
+	@echo > $@
+else
 	@echo Patching...
 	@(cd $(OUT_SRC_DIR) && $(foreach patch,$(PATCHES), echo -e " - Applying $(notdir $(patch))\n" && patch -f -p1 < $(patch) && echo -e "\n" &&) true) 2>&1 > $@.tmp || (cat $@.tmp && exit 1)
 	@mv $@.tmp $@ -f
+endif
 
 include project_specific.mk
