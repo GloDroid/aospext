@@ -52,7 +52,7 @@ copy:
 	@mkdir -p $(OUT_SRC_DIR)
 	@mkdir -p ./logs
 	@(shopt -s dotglob nullglob && rm -rf $(OUT_SRC_DIR)/*)
-	@(shopt -s dotglob nullglob && rsync -arv $(SRC_DIR)/* $(OUT_SRC_DIR)) 2>&1 > $(COPY_TARGET) || (cat $(COPY_TARGER) && exit 1)
+	@(shopt -s dotglob nullglob && rsync -arv $(SRC_DIR)/* $(OUT_SRC_DIR)) &> $(COPY_TARGET) || (cat $(COPY_TARGER) && exit 1)
 
 patch: ## Patch sources in intermediate directory
 patch: $(PATCH_TARGET)
@@ -62,7 +62,7 @@ ifneq ($(wildcard $(SRC_DIR)/_aospext_patched),)
 	@echo > $@
 else
 	@echo Patching...
-	@(cd $(OUT_SRC_DIR) && $(foreach patch,$(PATCHES), echo -e " - Applying $(notdir $(patch))\n" && patch -f -p1 < $(patch) && echo -e "\n" &&) true) 2>&1 > $@.tmp || (cat $@.tmp && exit 1)
+	@(cd $(OUT_SRC_DIR) && $(foreach patch,$(PATCHES), echo -e " - Applying $(notdir $(patch))\n" && patch -f -p1 < $(patch) && echo -e "\n" &&) true) &> $@.tmp || (cat $@.tmp && exit 1)
 	@mv $@.tmp $@ -f
 endif
 

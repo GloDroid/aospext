@@ -14,7 +14,7 @@ $(CONFIGURE_TARGET): $(PATCH_TARGET)
 	@echo "base_dir='$(OUT_BASE_DIR)'" >> $(OUT_BASE_DIR)/gen/aosp_cross.out
 	@echo "llvm_dir='$(LLVM_DIR)'" >> $(OUT_BASE_DIR)/gen/aosp_cross.out
 	@cat $(OUT_BASE_DIR)/gen/aosp_cross >> $(OUT_BASE_DIR)/gen/aosp_cross.out
-	@(cd $(OUT_SRC_DIR) && meson setup $(OUT_BUILD_DIR) --cross-file $(OUT_BASE_DIR)/gen/aosp_cross.out $(MESON_DEFS)) 2>&1 > $@.tmp || (cat $@.tmp && exit 1)
+	@(cd $(OUT_SRC_DIR) && meson setup $(OUT_BUILD_DIR) --cross-file $(OUT_BASE_DIR)/gen/aosp_cross.out $(MESON_DEFS)) &> $@.tmp || (cat $@.tmp && exit 1)
 	@mv $@.tmp $@ -f
 
 build: ## Build the project
@@ -23,7 +23,7 @@ build: $(BUILD_TARGET)
 $(BUILD_TARGET): $(CONFIGURE_TARGET)
 	@echo Building...
 	@mkdir -p $(OUT_BUILD_DIR)
-	@ninja -C $(OUT_BUILD_DIR) 2>&1 > $@.tmp || (cat $@.tmp && exit 1)
+	@ninja -C $(OUT_BUILD_DIR) &> $@.tmp || (cat $@.tmp && exit 1)
 	@mv $@.tmp $@ -f
 
 install: ## Install the project (will execute copy, patch, configure and build prior to install)
@@ -31,7 +31,7 @@ install: $(INSTALL_TARGET)
 $(INSTALL_TARGET): $(BUILD_TARGET)
 	@echo Installing...
 	@mkdir -p $(OUT_INSTALL_DIR)
-	@DESTDIR=$(OUT_INSTALL_DIR) ninja -C $(OUT_BUILD_DIR) install 2>&1 > $@.tmp || (cat $@.tmp && exit 1)
+	@DESTDIR=$(OUT_INSTALL_DIR) ninja -C $(OUT_BUILD_DIR) install &> $@.tmp || (cat $@.tmp && exit 1)
 	@mv $@.tmp $@ -f
 
 gen_aospless: ## Generate tree for building without AOSP or NDK
