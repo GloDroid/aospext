@@ -56,6 +56,6 @@ $(CARGO_GEN_FILES_TARGET): $(AOSP_FLAGS_DIR_OUT)/.sharedlib.timestamp
 		$(AOSPEXT_ABS_OUT_DIR)/project_specific.mk
 
 	# Build CARGO project
-	export $$(cat /etc/environment):$(RUST_BIN_DIR_ABS) && make -C $(AOSPEXT_ABS_OUT_DIR) install
+	export $$(cat /etc/environment):$(RUST_BIN_DIR_ABS):$(AOSP_ABSOLUTE_PATH)/$(LLVM_PREBUILTS_PATH) && make -C $(AOSPEXT_ABS_OUT_DIR) install
 
 	touch $@
