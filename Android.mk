@@ -8,6 +8,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(LOCAL_PATH)/cargo_mmradio.mk
 
+include $(LOCAL_PATH)/meson_dav1d.mk
 include $(LOCAL_PATH)/meson_dbus.mk
 include $(LOCAL_PATH)/meson_glib.mk
 include $(LOCAL_PATH)/meson_libgudev.mk
