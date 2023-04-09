@@ -18,4 +18,5 @@ include $(LOCAL_PATH)/meson_libqmi.mk
 include $(LOCAL_PATH)/meson_minigbm.mk
 include $(LOCAL_PATH)/meson_modemmanager.mk
 include $(LOCAL_PATH)/meson_drmhwcomposer.mk
+include $(LOCAL_PATH)/meson_ffmpegcodec2.mk
 include $(LOCAL_PATH)/ffmpeg.mk
