@@ -43,6 +43,13 @@ AOSPEXT_GEN_PKGCONFIGS += dav1d:$(DAV1D_VERSION)
 FFMPEG_DEFINITIONS += --enable-libdav1d
 endif
 
+ifneq ($(filter true, $(BOARD_FFMPEG_ENABLE_REQUEST_API)),)
+LOCAL_SHARED_LIBRARIES += libdrm libudev
+AOSPEXT_GEN_PKGCONFIGS += libdrm libudev
+FFMPEG_DEFINITIONS += --enable-libdrm --enable-libudev --enable-v4l2-request
+LOCAL_C_INCLUDES := $(BOARD_FFMPEG_KERNEL_HEADERS_DIR)
+endif
+
 AOSPEXT_EXPORT_INSTALLED_INCLUDE_DIRS := vendor/include
 
 #-------------------------------------------------------------------------------
