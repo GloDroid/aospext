@@ -16,11 +16,16 @@ AOSPEXT_BUILD_SYSTEM := meson
 LIBDRM_VERSION = $(shell cat external/libdrm/meson.build | grep -o "\<version\>\s*:\s*'\w*\.\w*\.\w*'" | grep -o "\w*\.\w*\.\w*" | head -1)
 MESA3D_VERSION = $(shell cat $(BOARD_MESA3D_SRC_DIR)/VERSION | cut -d '.' -f 1-2)
 MESA3D_GALLIUM_LIBDIR :=
-MESA3D_POPULATE_SYMLINKS :=
+MESA3D_POPULATE_DRI_SYMLINKS :=
+MESA3D_POPULATE_GVA_SYMLINKS :=
 
 ifeq ($(shell expr $(MESA3D_VERSION) \<= 24.1), 1)
 MESA3D_GALLIUM_LIBDIR := dri
-MESA3D_POPULATE_SYMLINKS := true
+MESA3D_POPULATE_DRI_SYMLINKS := true
+endif
+
+ifeq ($(BOARD_MESA3D_GALLIUM_VA),enabled)
+MESA3D_POPULATE_GVA_SYMLINKS := true
 endif
 
 MESA_VK_LIB_SUFFIX_amd := radeon
@@ -45,6 +50,8 @@ MESON_BUILD_ARGUMENTS := \
     -Dcpp_rtti=false                                                             \
     -Dlmsensors=disabled                                                         \
     -Dandroid-libbacktrace=disabled                                              \
+	-Dgallium-va=$(BOARD_MESA3D_GALLIUM_VA)					    				 \
+	-Dvideo-codecs=$(subst $(space),$(comma),$(BOARD_MESA3D_VIDEO_CODECS))	 \
     $(BOARD_MESA3D_EXTRA_MESON_ARGS)
 
 ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 30; echo $$?), 0)
@@ -70,6 +77,12 @@ endif
 ifneq ($(filter true, $(BOARD_MESA3D_BUILD_LIBGBM)),)
 AOSPEXT_GEN_TARGETS += lib:$(MESA_LIBGBM_NAME).so::$(MESA_LIBGBM_NAME):
 AOSPEXT_GEN_TARGETS += lib:gbm/dri_gbm.so::dri_gbm:
+endif
+
+ifneq ($(BOARD_MESA3D_GALLIUM_VA),)
+ifeq ($(shell expr $(MESA3D_VERSION) \<= 24.2), 1)
+AOSPEXT_GEN_TARGETS += lib:libgallium_drv_video.so:$(MESA3D_GALLIUM_LIBDIR):libgallium_drv_video:
+endif
 endif
 
 AOSPEXT_GEN_TARGETS += \
@@ -130,6 +143,11 @@ MESON_LLVM_VERSION := 12.0.0
 LOCAL_SHARED_LIBRARIES += libLLVM12
 endif
 
+ifneq ($(BOARD_MESA3D_GALLIUM_VA),)
+LOCAL_SHARED_LIBRARIES += libva libva-android
+AOSPEXT_GEN_PKGCONFIGS += libva:1.21.0
+endif
+
 ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 30; echo $$?), 0)
 LOCAL_SHARED_LIBRARIES += \
     android.hardware.graphics.mapper@4.0 \
@@ -143,7 +161,7 @@ endif
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(BOARD_MESA3D_SRC_DIR)/src/gbm/main
 AOSPEXT_EXPORT_INSTALLED_INCLUDE_DIRS := vendor/include
 
-ifneq ($(MESA3D_POPULATE_SYMLINKS),)
+ifneq ($(MESA3D_POPULATE_DRI_SYMLINKS),)
 define populate_dri_symlinks
 # -------------------------------------------------------------------------------
 # Mesa3d installs every dri target as a separate shared library, but for gallium drivers all
@@ -156,32 +174,64 @@ $(SYMLINKS_TARGET): $(AOSPEXT_INTERNAL_BUILD_TARGET)
 	# Create Symlinks
 	mkdir -p $$(dir $$@)
 ifneq ($(strip $(BOARD_MESA3D_GALLIUM_DRIVERS)),)
-	ls -1 $$(MESA3D_LIB_INSTALL_DIR)/dri/ | PATH=/usr/bin:$$PATH xargs -I{} ln -s -f libgallium_dri.so $$(dir $$@)/{}
-	cp `ls -1 $$(MESA3D_LIB_INSTALL_DIR)/dri/* | head -1` $$(MESA3D_LIB_INSTALL_DIR)/libgallium_dri.so
+	find $$(MESA3D_LIB_INSTALL_DIR)/dri -name \*_dri.so -printf '%f\n' | PATH=/usr/bin:$$PATH xargs -I{} ln -s -f libgallium_dri.so $$(dir $$@)/{}
+	cp `find $$(MESA3D_LIB_INSTALL_DIR)/dri -name \*_dri.so | head -1` $$(MESA3D_LIB_INSTALL_DIR)/libgallium_dri.so
 endif
 	touch $$@
 endef
+endif # MESA3D_POPULATE_DRI_SYMLINKS
+
+ifneq ($(MESA3D_POPULATE_GVA_SYMLINKS),)
+define populate_drv_video_symlinks
+# -------------------------------------------------------------------------------
+# This function is the same as populate_dri_symlinks, but made for Mesa's VA-API 
+# drivers instead of Gallium dri drivers
+
+$(SYMLINKS_TARGET_VIDEO): MESA3D_LIB_INSTALL_DIR:=$(dir $(AOSPEXT_INTERNAL_BUILD_TARGET))/install/vendor/lib$(if $(TARGET_IS_64_BIT),$(if $(filter 64 first,$(LOCAL_MULTILIB)),64))
+$(SYMLINKS_TARGET_VIDEO): $(AOSPEXT_INTERNAL_BUILD_TARGET)
+	# Create Symlinks
+	mkdir -p $$(dir $$@)
+ifneq ($(strip $(BOARD_MESA3D_GALLIUM_VA)),)
+	find $$(MESA3D_LIB_INSTALL_DIR)/dri -name \*_drv_video.so -printf '%f\n' | PATH=/usr/bin:$$PATH xargs -I{} ln -s -f $$(if $(shell expr $(MESA3D_VERSION) \>= 24.3),libgallium_dri, libgallium_drv_video).so $$(dir $$@)/{}
+ifeq ($(shell expr $(MESA3D_VERSION) \<= 24.2), 1)
+	cp `find $$(MESA3D_LIB_INSTALL_DIR)/dri -name \*_drv_video.so | head -1` $$(MESA3D_LIB_INSTALL_DIR)/libgallium_drv_video.so
+endif
+endif
+	touch $$@
+endef
+endif # MESA3D_POPULATE_GVA_SYMLINKS
 
 #-------------------------------------------------------------------------------
-endif # MESA3D_POPULATE_SYMLINKS
 
 LOCAL_MULTILIB := first
 include $(LOCAL_PATH)/aospext_cross_compile.mk
-ifneq ($(MESA3D_POPULATE_SYMLINKS),)
-SYMLINKS_TARGET := $($(AOSPEXT_ARCH_PREFIX)TARGET_OUT_VENDOR_SHARED_LIBRARIES)/dri/.symlinks.timestamp
+FIRSTARCH_SYMLINKS_TARGET :=
+ifneq ($(MESA3D_POPULATE_DRI_SYMLINKS),)
+SYMLINKS_TARGET := $($(AOSPEXT_ARCH_PREFIX)TARGET_OUT_VENDOR_SHARED_LIBRARIES)/$(MESA3D_GALLIUM_LIBDIR)/.symlinks.timestamp
 $(eval $(call populate_dri_symlinks))
-FIRSTARCH_SYMLINKS_TARGET := $(SYMLINKS_TARGET)
-endif # MESA3D_POPULATE_SYMLINKS
+FIRSTARCH_SYMLINKS_TARGET += $(SYMLINKS_TARGET)
+endif # MESA3D_POPULATE_DRI_SYMLINKS
+ifneq ($(MESA3D_POPULATE_GVA_SYMLINKS),)
+SYMLINKS_TARGET_VIDEO := $($(AOSPEXT_ARCH_PREFIX)TARGET_OUT_VENDOR_SHARED_LIBRARIES)/$(MESA3D_GALLIUM_LIBDIR)/.symlinks.drv_video.timestamp
+$(eval $(call populate_drv_video_symlinks))
+FIRSTARCH_SYMLINKS_TARGET += $(SYMLINKS_TARGET_VIDEO)
+endif # MESA3D_POPULATE_GVA_SYMLINKS
 FIRSTARCH_BUILD_TARGET := $(AOSPEXT_INTERNAL_BUILD_TARGET)
 
 ifdef TARGET_2ND_ARCH
 LOCAL_MULTILIB := 32
 include $(LOCAL_PATH)/aospext_cross_compile.mk
-ifneq ($(MESA3D_POPULATE_SYMLINKS),)
-SYMLINKS_TARGET := $($(AOSPEXT_ARCH_PREFIX)TARGET_OUT_VENDOR_SHARED_LIBRARIES)/dri/.symlinks.timestamp
+SECONDARCH_SYMLINKS_TARGET :=
+ifneq ($(MESA3D_POPULATE_DRI_SYMLINKS),)
+SYMLINKS_TARGET := $($(AOSPEXT_ARCH_PREFIX)TARGET_OUT_VENDOR_SHARED_LIBRARIES)/$(MESA3D_GALLIUM_LIBDIR)/.symlinks.timestamp
 $(eval $(call populate_dri_symlinks))
-SECONDARCH_SYMLINKS_TARGET := $(SYMLINKS_TARGET)
-endif # MESA3D_POPULATE_SYMLINKS
+SECONDARCH_SYMLINKS_TARGET += $(SYMLINKS_TARGET)
+endif # MESA3D_POPULATE_DRI_SYMLINKS
+ifneq ($(MESA3D_POPULATE_GVA_SYMLINKS),)
+SYMLINKS_TARGET_VIDEO := $($(AOSPEXT_ARCH_PREFIX)TARGET_OUT_VENDOR_SHARED_LIBRARIES)/$(MESA3D_GALLIUM_LIBDIR)/.symlinks.drv_video.timestamp
+$(eval $(call populate_drv_video_symlinks))
+SECONDARCH_SYMLINKS_TARGET += $(SYMLINKS_TARGET_VIDEO)
+endif # MESA3D_POPULATE_GVA_SYMLINKS
 SECONDARCH_BUILD_TARGET := $(AOSPEXT_INTERNAL_BUILD_TARGET)
 endif
 
