@@ -26,7 +26,23 @@ AOSPEXT_EXPORT_INSTALLED_INCLUDE_DIRS := vendor/include
 
 LOCAL_MULTILIB := first
 include $(LOCAL_PATH)/aospext_cross_compile.mk
+TMP_AOSPEXT_TARGET_FIRST:=$(AOSPEXT_INTERNAL_BUILD_TARGET)
+
+ifdef TARGET_2ND_ARCH
+LOCAL_MULTILIB := 32
+include $(LOCAL_PATH)/aospext_cross_compile.mk
+TMP_AOSPEXT_TARGET_32:=$(AOSPEXT_INTERNAL_BUILD_TARGET)
+endif
+
+LOCAL_MULTILIB := first
+AOSPEXT_INTERNAL_BUILD_TARGET:=$(TMP_AOSPEXT_TARGET_FIRST)
 include $(LOCAL_PATH)/aospext_gen_targets.mk
+
+ifdef TARGET_2ND_ARCH
+LOCAL_MULTILIB := 32
+AOSPEXT_INTERNAL_BUILD_TARGET:=$(TMP_AOSPEXT_TARGET_32)
+include $(LOCAL_PATH)/aospext_gen_targets.mk
+endif
 
 #-------------------------------------------------------------------------------
 
