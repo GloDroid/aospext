@@ -25,7 +25,6 @@ MESA_VK_LIB_SUFFIX_swrast := lvp
 MESON_BUILD_ARGUMENTS := \
     -Dplatforms=android                                                          \
     -Dplatform-sdk-version=$(PLATFORM_SDK_VERSION)                               \
-    -Ddri-drivers=                                                               \
     -Dgallium-drivers=$(subst $(space),$(comma),$(BOARD_MESA3D_GALLIUM_DRIVERS)) \
     -Dvulkan-drivers=$(subst $(space),$(comma),$(subst radeon,amd,$(BOARD_MESA3D_VULKAN_DRIVERS)))   \
     -Dgbm=enabled                                                                \
