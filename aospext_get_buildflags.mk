@@ -176,8 +176,13 @@ define m-c-flags
   $(PRIVATE_CFLAGS_NO_OVERRIDE)
 endef
 
+TMP_AOSPEXT_FILTER_OUT_CFLAGS := \
+    -fno-rtti \
+    -ftrivial-auto-var-init=zero \
+    -enable-trivial-auto-var-init-zero-knowing-it-will-be-removed-from-clang \
+
 define filter-c-flags
-  $(filter-out -fno-rtti,
+  $(filter-out $(TMP_AOSPEXT_FILTER_OUT_CFLAGS),
     $(patsubst -std=%,, \
       $(patsubst -f%,, \
         $(patsubst  -W%,, $1))))
