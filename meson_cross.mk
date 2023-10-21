@@ -20,6 +20,8 @@ MESON_SRC_PATH                           := $(BOARD_$(AOSPEXT_PROJECT_NAME)_SRC_
 MESON_PATCHES_DIRS                       := $(BOARD_$(AOSPEXT_PROJECT_NAME)_PATCHES_DIRS)
 MESON_GEN_FILES_TARGET                   := $(AOSPEXT_OUT_DIR)/.timestamp
 
+$(if $(MESON_SRC_PATH),,$(error Variable BOARD_$(AOSPEXT_PROJECT_NAME)_SRC_DIR is not set))
+
 $(MESON_GEN_FILES_TARGET): MESON_CPU_FAMILY   := $(subst arm64,aarch64,$(TARGET_$(AOSPEXT_ARCH_PREFIX)ARCH))
 $(MESON_GEN_FILES_TARGET): MESON_RUST_TARGET  := $(subst arm64,aarch64,$(TARGET_$(AOSPEXT_ARCH_PREFIX)ARCH))-linux-android
 $(MESON_GEN_FILES_TARGET): AOSP_FLAGS_DIR_OUT := $(call relative-to-absolute,$(AOSP_FLAGS_DIR_OUT))

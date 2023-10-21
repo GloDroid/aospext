@@ -12,6 +12,8 @@ CARGO_SRC_PATH                           := $(BOARD_$(AOSPEXT_PROJECT_NAME)_SRC_
 CARGO_PATCHES_DIRS                       := $(BOARD_$(AOSPEXT_PROJECT_NAME)_PATCHES_DIRS)
 CARGO_GEN_FILES_TARGET                   := $(AOSPEXT_OUT_DIR)/.timestamp
 
+$(if $(CARGO_SRC_PATH),,$(error Variable BOARD_$(AOSPEXT_PROJECT_NAME)_SRC_DIR is not set))
+
 $(CARGO_GEN_FILES_TARGET): CARGO_RUST_TARGET  := $(subst arm64,aarch64,$(TARGET_$(AOSPEXT_ARCH_PREFIX)ARCH))-linux-android
 $(CARGO_GEN_FILES_TARGET): AOSP_FLAGS_DIR_OUT := $(call relative-to-absolute,$(AOSP_FLAGS_DIR_OUT))
 $(CARGO_GEN_FILES_TARGET): AOSPEXT_ABS_OUT_DIR:= $(call relative-to-absolute,$(AOSPEXT_OUT_DIR))
