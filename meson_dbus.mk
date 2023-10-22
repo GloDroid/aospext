@@ -42,7 +42,7 @@ LOCAL_MULTILIB := first
 include $(LOCAL_PATH)/meson_cross.mk
 AOSPEXT_TARGETS_DEP:=$(MESON_GEN_FILES_TARGET)
 AOSPEXT_PROJECT_INSTALL_DIR:=$(dir $(AOSPEXT_TARGETS_DEP))/install
-AOSPEXT_PROJECT_OUT_INCLUDE_DIR:=$(AOSPEXT_PROJECT_INSTALL_DIR)/usr/local/include/dbus
+AOSPEXT_PROJECT_OUT_INCLUDE_DIR:=$(AOSPEXT_PROJECT_INSTALL_DIR)/vendor/include/dbus-1.0
 include $(LOCAL_PATH)/aospext_gen_targets.mk
 
 #-------------------------------------------------------------------------------
