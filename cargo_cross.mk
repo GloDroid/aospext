@@ -39,6 +39,8 @@ $(CARGO_GEN_FILES_TARGET): CARGO_PATCHES_DIRS:=$(CARGO_PATCHES_DIRS)
 $(CARGO_GEN_FILES_TARGET): $(AOSP_FLAGS_DIR_OUT)/.exec.timestamp
 $(CARGO_GEN_FILES_TARGET): $(AOSP_FLAGS_DIR_OUT)/.sharedlib.timestamp
 	cp $(MY_ABS_PATH)/tools/wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrapper.sh
+	ln -sf ./wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrap_c
+	ln -sf ./wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrap_cxx
 	ln -sf ./wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrap_rust_ld
 	cp $(MY_ABS_PATH)/tools/gen_aospless_dir.py $(AOSPEXT_ABS_OUT_DIR)/gen_aospless_dir.py
 

@@ -13,6 +13,11 @@ INSTALL_TARGET:=./logs/5.install.log
 
 CARGO_ARGS+=$(if $(wildcard $(SRC_DIR)/vendor),--offline)
 
+CARGO_ENV := \
+    CC=$(LOCAL_PATH)/toolchain_wrapper/wrap_c \
+    CXX=$(LOCAL_PATH)/toolchain_wrapper/wrap_cxx \
+    AR=$(if $(LLVM_DIR),$(LLVM_DIR)/,)llvm-ar \
+
 configure: ## Configure the project
 configure: export BASE_DIR = $(OUT_BASE_DIR)
 configure: $(CONFIGURE_TARGET)
@@ -39,7 +44,7 @@ build: $(BUILD_TARGET)
 $(BUILD_TARGET): $(CONFIGURE_TARGET)
 	@echo Building...
 	@mkdir -p $(OUT_BUILD_DIR)
-	@bash -c 'cd $(OUT_SRC_DIR) && cargo build --release $(CARGO_ARGS)' &> $@.tmp || (cat $@.tmp && exit 1)
+	@bash -c 'cd $(OUT_SRC_DIR) && $(CARGO_ENV) cargo build --release $(CARGO_ARGS)' &> $@.tmp || (cat $@.tmp && exit 1)
 	@mv $@.tmp $@ -f
 
 install: ## Install the project (will execute copy, patch, configure and build prior to install)

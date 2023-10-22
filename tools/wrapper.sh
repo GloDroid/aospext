@@ -32,6 +32,7 @@ elif [ "${COMPILER}" == "wrap_cxx" ]; then
 elif [ "${COMPILER}" == "wrap_rust_ld" ]; then
     ARGS="${CC} $@ ${LINK_ARGS} -Wl,--unresolved-symbols=ignore-all"
     # Filter-out libraries, since we're not using NDK but adding .so directly
+    ARGS="${ARGS//-lc++_shared/}"
     ARGS="${ARGS//-lc/}"
     ARGS="${ARGS//-ldl/}"
     ARGS="${ARGS//-lgcc/}"
