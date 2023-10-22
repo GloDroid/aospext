@@ -28,7 +28,7 @@ MESON_BUILD_ARGUMENTS := \
     -Dgallium-drivers=$(subst $(space),$(comma),$(BOARD_MESA3D_GALLIUM_DRIVERS)) \
     -Dvulkan-drivers=$(subst $(space),$(comma),$(subst radeon,amd,$(BOARD_MESA3D_VULKAN_DRIVERS)))   \
     -Dgbm=enabled                                                                \
-    -Degl=enabled                                                                \
+    -Degl=$(if $(BOARD_MESA3D_GALLIUM_DRIVERS),enabled,disabled)                 \
     -Dcpp_rtti=false                                                             \
     -Dlmsensors=disabled                                                         \
     -Dandroid-libbacktrace=disabled                                              \
@@ -42,13 +42,17 @@ endif
 
 # Format: TYPE:REL_PATH_TO_INSTALL_ARTIFACT:VENDOR_SUBDIR:MODULE_NAME:SYMLINK_SUFFIX
 # TYPE one of: lib, bin, etc
-AOSPEXT_GEN_TARGETS := \
+AOSPEXT_GEN_TARGETS := $(BOARD_MESA3D_EXTRA_TARGETS)
+
+ifneq ($(strip $(BOARD_MESA3D_GALLIUM_DRIVERS)),)
+AOSPEXT_GEN_TARGETS += \
     lib:libgallium_dri.so:dri:libgallium_dri:   \
     lib:libglapi.so::libglapi:                  \
     lib:libEGL.so:egl:libEGL_mesa:              \
     lib:libGLESv1_CM.so:egl:libGLESv1_CM_mesa:  \
     lib:libGLESv2.so:egl:libGLESv2_mesa:        \
-    $(BOARD_MESA3D_EXTRA_TARGETS)
+
+endif
 
 ifneq ($(filter true, $(BOARD_MESA3D_BUILD_LIBGBM)),)
 AOSPEXT_GEN_TARGETS += lib:$(MESA_LIBGBM_NAME).so::$(MESA_LIBGBM_NAME):
@@ -130,8 +134,10 @@ $(SYMLINKS_TARGET): MESA3D_LIB_INSTALL_DIR:=$(dir $(MESON_GEN_FILES_TARGET))/ins
 $(SYMLINKS_TARGET): $(MESON_GEN_FILES_TARGET)
 	# Create Symlinks
 	mkdir -p $$(dir $$@)
+ifneq ($(strip $(BOARD_MESA3D_GALLIUM_DRIVERS)),)
 	ls -1 $$(MESA3D_LIB_INSTALL_DIR)/dri/ | PATH=/usr/bin:$$PATH xargs -I{} ln -s -f libgallium_dri.so $$(dir $$@)/{}
 	cp `ls -1 $$(MESA3D_LIB_INSTALL_DIR)/dri/* | head -1` $$(MESA3D_LIB_INSTALL_DIR)/libgallium_dri.so
+endif
 	touch $$@
 endef
 
