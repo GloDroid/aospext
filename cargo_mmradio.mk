@@ -5,13 +5,13 @@
 # Copyright (C) 2021 GlobalLogic Ukraine
 # Copyright (C) 2021-2023 Roman Stratiienko (r.stratiienko@gmail.com)
 
-AOSPEXT_PROJECT_NAME := MMRADIO
-
 ifneq ($(filter true, $(BOARD_BUILD_AOSPEXT_MMRADIO)),)
 
 LOCAL_PATH := $(call my-dir)
+include $(LOCAL_PATH)/aospext_cleanup.mk
 
-include $(CLEAR_VARS)
+AOSPEXT_PROJECT_NAME := MMRADIO
+AOSPEXT_BUILD_SYSTEM := cargo
 
 LOCAL_SHARED_LIBRARIES := \
     libbase \
@@ -44,10 +44,7 @@ AOSPEXT_GEN_TARGETS := \
 
 # Build first ARCH only
 LOCAL_MULTILIB := first
-include $(LOCAL_PATH)/cargo_cross.mk
-AOSPEXT_TARGETS_DEP:=$(CARGO_GEN_FILES_TARGET)
-AOSPEXT_PROJECT_INSTALL_DIR:=$(dir $(AOSPEXT_TARGETS_DEP))/install
-AOSPEXT_PROJECT_OUT_INCLUDE_DIR:=
+include $(LOCAL_PATH)/aospext_cross_compile.mk
 include $(LOCAL_PATH)/aospext_gen_targets.mk
 
 #-------------------------------------------------------------------------------

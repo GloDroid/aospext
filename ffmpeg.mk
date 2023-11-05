@@ -4,11 +4,13 @@
 #
 # Copyright (C) 2021-2022 Roman Stratiienko (r.stratiienko@gmail.com)
 
-AOSPEXT_PROJECT_NAME := FFMPEG
-
 ifneq ($(filter true, $(BOARD_BUILD_AOSPEXT_FFMPEG)),)
 
 LOCAL_PATH := $(call my-dir)
+include $(LOCAL_PATH)/aospext_cleanup.mk
+
+AOSPEXT_PROJECT_NAME := FFMPEG
+AOSPEXT_BUILD_SYSTEM := ffmpeg
 
 LIBDRM_VERSION = $(shell cat external/libdrm/meson.build | grep -o "\<version\>\s*:\s*'\w*\.\w*\.\w*'" | grep -o "\w*\.\w*\.\w*" | head -1)
 
@@ -32,25 +34,21 @@ AOSPEXT_GEN_TARGETS := \
 include $(CLEAR_VARS)
 
 LOCAL_SHARED_LIBRARIES := libc
-FFMPEG_GEN_PKGCONFIGS :=
+AOSPEXT_GEN_PKGCONFIGS :=
 
 ifneq ($(filter true, $(BOARD_BUILD_AOSPEXT_DAV1D)),)
 DAV1D_VERSION = $(shell cat $(BOARD_DAV1D_SRC_DIR)/meson.build | grep -o "\<version\>\s*:\s*'\w*\.\w*\.\w*'" | grep -o "\w*\.\w*\.\w*" | head -1)
 LOCAL_SHARED_LIBRARIES += libdav1d
-FFMPEG_GEN_PKGCONFIGS += dav1d:$(DAV1D_VERSION)
+AOSPEXT_GEN_PKGCONFIGS += dav1d:$(DAV1D_VERSION)
 FFMPEG_DEFINITIONS += --enable-libdav1d
 endif
+
+AOSPEXT_EXPORT_INSTALLED_INCLUDE_DIRS := vendor/include
 
 #-------------------------------------------------------------------------------
 
 LOCAL_MULTILIB := first
-include $(LOCAL_PATH)/ffmpeg_cross.mk
-FIRSTARCH_FFMPEG_TARGET:=$(FFMPEG_GEN_FILES_TARGET)
-
-LOCAL_MULTILIB := first
-AOSPEXT_TARGETS_DEP:=$(FIRSTARCH_FFMPEG_TARGET)
-AOSPEXT_PROJECT_INSTALL_DIR:=$(dir $(FIRSTARCH_FFMPEG_TARGET))/install
-AOSPEXT_PROJECT_OUT_INCLUDE_DIR:=$(AOSPEXT_PROJECT_INSTALL_DIR)/vendor/include
+include $(LOCAL_PATH)/aospext_cross_compile.mk
 include $(LOCAL_PATH)/aospext_gen_targets.mk
 
 endif # BOARD_BUILD_FFMPEG

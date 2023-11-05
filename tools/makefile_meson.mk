@@ -10,11 +10,11 @@ configure: export BASE_DIR = $(OUT_BASE_DIR)
 configure: $(CONFIGURE_TARGET)
 $(CONFIGURE_TARGET): $(PATCH_TARGET)
 	@echo Configuring...
-	@echo "[constants]" > $(OUT_BASE_DIR)/gen/aosp_cross.out
-	@echo "base_dir='$(OUT_BASE_DIR)'" >> $(OUT_BASE_DIR)/gen/aosp_cross.out
-	@echo "llvm_dir='$(LLVM_DIR)'" >> $(OUT_BASE_DIR)/gen/aosp_cross.out
-	@cat $(OUT_BASE_DIR)/gen/aosp_cross >> $(OUT_BASE_DIR)/gen/aosp_cross.out
-	@(cd $(OUT_SRC_DIR) && meson setup $(OUT_BUILD_DIR) --cross-file $(OUT_BASE_DIR)/gen/aosp_cross.out $(MESON_DEFS)) &> $@.tmp || (cat $@.tmp && exit 1)
+	@echo "[constants]" > $(OUT_BASE_DIR)/gen/meson_aosp_cross.out
+	@echo "base_dir='$(OUT_BASE_DIR)'" >> $(OUT_BASE_DIR)/gen/meson_aosp_cross.out
+	@echo "llvm_dir='$(LLVM_DIR)'" >> $(OUT_BASE_DIR)/gen/meson_aosp_cross.out
+	@cat $(OUT_BASE_DIR)/gen/meson_aosp_cross >> $(OUT_BASE_DIR)/gen/meson_aosp_cross.out
+	@(cd $(OUT_SRC_DIR) && meson setup $(OUT_BUILD_DIR) --cross-file $(OUT_BASE_DIR)/gen/meson_aosp_cross.out $(MESON_DEFS)) &> $@.tmp || (cat $@.tmp && exit 1)
 	@mv $@.tmp $@ -f
 
 build: ## Build the project

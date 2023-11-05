@@ -31,18 +31,19 @@ elif [ "${COMPILER}" == "wrap_cxx" ]; then
     ARGS="${CXX} $@"
 elif [ "${COMPILER}" == "wrap_rust_ld" ]; then
     ARGS="${CC} $@ ${LINK_ARGS} -Wl,--unresolved-symbols=ignore-all"
-    # Filter-out libraries, since we're not using NDK but adding .so directly
-    ARGS="${ARGS//-lc++_shared/}"
-    ARGS="${ARGS//-lc/}"
-    ARGS="${ARGS//-ldl/}"
-    ARGS="${ARGS//-lgcc/}"
-    ARGS="${ARGS//-llog/}"
-    ARGS="${ARGS//-lm/}"
-    ARGS="${ARGS//-lunwind/}"
 else
     echo "Unknown compiler: ${COMPILER}"
     exit 1
 fi
+
+# Filter-out libraries, since we're not using NDK but adding .so directly
+ARGS="${ARGS//-lc++_shared/}"
+ARGS="${ARGS//-lc/}"
+ARGS="${ARGS//-ldl/}"
+ARGS="${ARGS//-lgcc/}"
+ARGS="${ARGS//-llog/}"
+ARGS="${ARGS//-lm/}"
+ARGS="${ARGS//-lunwind/}"
 
 ARGS="${ARGS/\[C_ARGS\]/${CFLAGS}}"
 ARGS="${ARGS/\[CPP_ARGS\]/${CPPFLAGS}}"

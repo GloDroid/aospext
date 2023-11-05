@@ -5,17 +5,18 @@
 # Copyright (C) 2021 GlobalLogic Ukraine
 # Copyright (C) 2021-2022 Roman Stratiienko (r.stratiienko@gmail.com)
 
-AOSPEXT_PROJECT_NAME := DRMHWCOMPOSER
 
 ifneq ($(filter true, $(BOARD_BUILD_AOSPEXT_DRMHWCOMPOSER)),)
 
 LOCAL_PATH := $(call my-dir)
+include $(LOCAL_PATH)/aospext_cleanup.mk
 
-include $(CLEAR_VARS)
+AOSPEXT_PROJECT_NAME := DRMHWCOMPOSER
+AOSPEXT_BUILD_SYSTEM := meson
 
 LOCAL_HEADER_LIBRARIES :=
 LOCAL_SHARED_LIBRARIES := libcutils libdrm libhardware libhidlbase liblog libsync libui libutils
-MESON_GEN_PKGCONFIGS := cutils drm hardware hidlbase log sync ui utils
+AOSPEXT_GEN_PKGCONFIGS := cutils drm hardware hidlbase log sync ui utils
 
 MESON_BUILD_ARGUMENTS := \
 
@@ -30,7 +31,7 @@ ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 33; echo $$?), 0)
 
 LOCAL_HEADER_LIBRARIES += android.hardware.graphics.composer3-command-buffer
 LOCAL_SHARED_LIBRARIES += android.hardware.graphics.composer3-V1-ndk libbinder libbinder_ndk
-MESON_GEN_PKGCONFIGS += android.hardware.graphics.composer3-V1-ndk binder binder_ndk
+AOSPEXT_GEN_PKGCONFIGS += android.hardware.graphics.composer3-V1-ndk binder binder_ndk
 AOSPEXT_GEN_TARGETS += \
     bin:hw/android.hardware.composer.hwc3-service.drm:hw:android.hardware.composer.hwc3-service.drm: \
     etc:init/hwc3-drm.rc:init:hwc3-drm.rc: \
@@ -40,10 +41,7 @@ endif
 
 # Build first ARCH only
 LOCAL_MULTILIB := first
-include $(LOCAL_PATH)/meson_cross.mk
-AOSPEXT_TARGETS_DEP:=$(MESON_GEN_FILES_TARGET)
-AOSPEXT_PROJECT_INSTALL_DIR:=$(dir $(AOSPEXT_TARGETS_DEP))/install
-AOSPEXT_PROJECT_OUT_INCLUDE_DIR:=
+include $(LOCAL_PATH)/aospext_cross_compile.mk
 include $(LOCAL_PATH)/aospext_gen_targets.mk
 
 #-------------------------------------------------------------------------------

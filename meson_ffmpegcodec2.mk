@@ -5,13 +5,13 @@
 # Copyright (C) 2021 GlobalLogic Ukraine
 # Copyright (C) 2021-2022 Roman Stratiienko (r.stratiienko@gmail.com)
 
-AOSPEXT_PROJECT_NAME := FFMPEGCODEC2
-
 ifneq ($(filter true, $(BOARD_BUILD_AOSPEXT_FFMPEGCODEC2)),)
 
 LOCAL_PATH := $(call my-dir)
+include $(LOCAL_PATH)/aospext_cleanup.mk
 
-include $(CLEAR_VARS)
+AOSPEXT_PROJECT_NAME := FFMPEGCODEC2
+AOSPEXT_BUILD_SYSTEM := meson
 
 LOCAL_SHARED_LIBRARIES := \
     android.hardware.media.c2@1.2 \
@@ -32,7 +32,7 @@ LOCAL_SHARED_LIBRARIES := \
     libutils \
     libcutils \
 
-MESON_GEN_PKGCONFIGS := cutils drm hardware hidlbase log sync ui utils
+AOSPEXT_GEN_PKGCONFIGS := cutils drm hardware hidlbase log sync ui utils
 
 MESON_BUILD_ARGUMENTS := \
 
@@ -49,10 +49,7 @@ AOSPEXT_GEN_TARGETS := \
 
 # Build first ARCH only
 LOCAL_MULTILIB := first
-include $(LOCAL_PATH)/meson_cross.mk
-AOSPEXT_TARGETS_DEP:=$(MESON_GEN_FILES_TARGET)
-AOSPEXT_PROJECT_INSTALL_DIR:=$(dir $(AOSPEXT_TARGETS_DEP))/install
-AOSPEXT_PROJECT_OUT_INCLUDE_DIR:=
+include $(LOCAL_PATH)/aospext_cross_compile.mk
 include $(LOCAL_PATH)/aospext_gen_targets.mk
 
 #-------------------------------------------------------------------------------

@@ -5,16 +5,16 @@
 # Copyright (C) 2021 GlobalLogic Ukraine
 # Copyright (C) 2021-2022 Roman Stratiienko (r.stratiienko@gmail.com)
 
-AOSPEXT_PROJECT_NAME := LIBQMI
-
 ifneq ($(filter true, $(BOARD_BUILD_AOSPEXT_LIBQMI)),)
 
 LOCAL_PATH := $(call my-dir)
+include $(LOCAL_PATH)/aospext_cleanup.mk
 
-include $(CLEAR_VARS)
+AOSPEXT_PROJECT_NAME := LIBQMI
+AOSPEXT_BUILD_SYSTEM := meson
 
 LOCAL_SHARED_LIBRARIES := libc libglib-2.0 libgio-2.0 libgobject-2.0
-MESON_GEN_PKGCONFIGS := glib-2.0:2.75.1 gio-2.0:2.75.1 gio-unix-2.0:2.75.1 gobject-2.0:2.75.1
+AOSPEXT_GEN_PKGCONFIGS := glib-2.0:2.75.1 gio-2.0:2.75.1 gio-unix-2.0:2.75.1 gobject-2.0:2.75.1
 
 MESON_BUILD_ARGUMENTS := \
     -Dudev=false \
@@ -35,12 +35,11 @@ AOSPEXT_GEN_TARGETS := \
 AOSPEXT_GEN_TARGETS += \
     $(foreach bin,$(TMP_OUT_BIN), bin:$(bin)::$(bin):)
 
+AOSPEXT_EXPORT_INSTALLED_INCLUDE_DIRS := vendor/include/libqmi-glib
+
 # Build first ARCH only
 LOCAL_MULTILIB := first
-include $(LOCAL_PATH)/meson_cross.mk
-AOSPEXT_TARGETS_DEP:=$(MESON_GEN_FILES_TARGET)
-AOSPEXT_PROJECT_INSTALL_DIR:=$(dir $(AOSPEXT_TARGETS_DEP))/install
-AOSPEXT_PROJECT_OUT_INCLUDE_DIR:=$(AOSPEXT_PROJECT_INSTALL_DIR)/vendor/include/libqmi-glib
+include $(LOCAL_PATH)/aospext_cross_compile.mk
 include $(LOCAL_PATH)/aospext_gen_targets.mk
 
 #-------------------------------------------------------------------------------

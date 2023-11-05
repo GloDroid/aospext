@@ -5,16 +5,16 @@
 # Copyright (C) 2021 GlobalLogic Ukraine
 # Copyright (C) 2021-2022 Roman Stratiienko (r.stratiienko@gmail.com)
 
-AOSPEXT_PROJECT_NAME := LIBCAMERA
-
 ifneq ($(filter true, $(BOARD_BUILD_AOSPEXT_LIBCAMERA)),)
 
 LOCAL_PATH := $(call my-dir)
+include $(LOCAL_PATH)/aospext_cleanup.mk
 
-include $(CLEAR_VARS)
+AOSPEXT_PROJECT_NAME := LIBCAMERA
+AOSPEXT_BUILD_SYSTEM := meson
 
 LOCAL_SHARED_LIBRARIES := libc libexif libjpeg libdl libudev libevent libcrypto
-MESON_GEN_PKGCONFIGS := libexif libjpeg dl libudev libevent_pthreads libcrypto
+AOSPEXT_GEN_PKGCONFIGS := libexif libjpeg dl libudev libevent_pthreads libcrypto
 
 MESON_BUILD_ARGUMENTS := \
     -Dwerror=false                                                           \
@@ -34,11 +34,10 @@ AOSPEXT_GEN_TARGETS := \
     bin:cam::libcamera-cam:                   \
     $(BOARD_LIBCAMERA_EXTRA_TARGETS)
 
+AOSPEXT_EXPORT_INSTALLED_INCLUDE_DIRS := vendor/include/libcamera
+
 LOCAL_MULTILIB := first
-include $(LOCAL_PATH)/meson_cross.mk
-AOSPEXT_TARGETS_DEP:=$(MESON_GEN_FILES_TARGET)
-AOSPEXT_PROJECT_INSTALL_DIR:=$(dir $(AOSPEXT_TARGETS_DEP))/install
-AOSPEXT_PROJECT_OUT_INCLUDE_DIR:=$(AOSPEXT_PROJECT_INSTALL_DIR)/vendor/include/libcamera
+include $(LOCAL_PATH)/aospext_cross_compile.mk
 include $(LOCAL_PATH)/aospext_gen_targets.mk
 
 #-------------------------------------------------------------------------------
