@@ -8,6 +8,8 @@ LOCAL_PATH := $(call my-dir)
 
 include $(LOCAL_PATH)/cargo_mmradio.mk
 
+include $(LOCAL_PATH)/cmake_armnn.mk
+include $(LOCAL_PATH)/cmake_computelibrary.mk
 include $(LOCAL_PATH)/cmake_flatbuffers.mk
 
 include $(LOCAL_PATH)/ffmpeg.mk
