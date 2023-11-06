@@ -191,7 +191,7 @@ endef
 define nospace-includes
   $(subst $(space)-isystem$(space),$(space)-isystem, \
   $(subst $(space)-I$(space),$(space)-I, \
-  $(strip $(c-includes))))
+  $(strip $(c-includes) $(addprefix -I , $(PRIVATE_C_INCLUDES)))))
 endef
 
 # Ensure include paths are always absolute
