@@ -24,19 +24,6 @@ MESA_VK_LIB_SUFFIX_panfrost := panfrost
 MESA_VK_LIB_SUFFIX_virtio := virtio
 MESA_VK_LIB_SUFFIX_swrast := lvp
 
-MESON_BUILD_ARGUMENTS := \
-    -Dplatforms=android                                                          \
-    -Dplatform-sdk-version=$(PLATFORM_SDK_VERSION)                               \
-    -Dgallium-drivers=$(subst $(space),$(comma),$(BOARD_MESA3D_GALLIUM_DRIVERS)) \
-    -Dvulkan-drivers=$(subst $(space),$(comma),$(subst radeon,amd,$(BOARD_MESA3D_VULKAN_DRIVERS)))   \
-    -Dgbm=enabled                                                                \
-    -Degl=$(if $(BOARD_MESA3D_GALLIUM_DRIVERS),enabled,disabled)                 \
-    -Dllvm=$(if $(MESON_GEN_LLVM_STUB),enabled,disabled)                         \
-    -Dcpp_rtti=false                                                             \
-    -Dlmsensors=disabled                                                         \
-    -Dandroid-libbacktrace=disabled                                              \
-    $(BOARD_MESA3D_EXTRA_MESON_ARGS)
-
 ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 30; echo $$?), 0)
 MESA_LIBGBM_NAME := libgbm_mesa
 else
@@ -74,7 +61,7 @@ LOCAL_CFLAGS += $(BOARD_MESA3D_CFLAGS)
 
 ifneq ($(filter swrast,$(BOARD_MESA3D_GALLIUM_DRIVERS) $(BOARD_MESA3D_VULKAN_DRIVERS)),)
 ifeq ($(BOARD_MESA3D_FORCE_SOFTPIPE),)
-MESON_GEN_LLVM_STUB := true
+MESA3D_USES_LLVM := true
 endif
 endif
 
@@ -89,7 +76,7 @@ AOSPEXT_GEN_PKGCONFIGS += libdrm_intel:$(LIBDRM_VERSION)
 endif
 
 ifneq ($(filter radeonsi,$(BOARD_MESA3D_GALLIUM_DRIVERS)),)
-MESON_GEN_LLVM_STUB := true
+MESA3D_USES_LLVM := true
 LOCAL_CFLAGS += -DFORCE_BUILD_AMDGPU   # instructs LLVM to declare LLVMInitializeAMDGPU* functions
 endif
 
@@ -114,9 +101,10 @@ LOCAL_STATIC_LIBRARIES += DirectX-Guids
 AOSPEXT_GEN_PKGCONFIGS += DirectX-Headers
 endif
 
-ifneq ($(MESON_GEN_LLVM_STUB),)
-MESON_LLVM_VERSION := 12.0.0
-LOCAL_SHARED_LIBRARIES += libLLVM12
+ifneq ($(MESA3D_USES_LLVM),)
+$(if $(BOARD_BUILD_AOSPEXT_LLVM),,$(error LLVM is required but BOARD_BUILD_AOSPEXT_LLVM is not enabled))
+LLVM_VERSION := $(shell cat $(BOARD_LLVM_SRC_DIR)/llvm/CMakeLists.txt | grep -o 'LLVM_VERSION_MAJOR [0-9]\+' | grep -o '[0-9][0-9]*' | head -1)
+LOCAL_SHARED_LIBRARIES += libLLVM-$(LLVM_VERSION)
 endif
 
 ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 30; echo $$?), 0)
@@ -128,6 +116,19 @@ LOCAL_SHARED_LIBRARIES += \
 
 AOSPEXT_GEN_PKGCONFIGS += android.hardware.graphics.mapper:4.0
 endif
+
+MESON_BUILD_ARGUMENTS := \
+    -Dplatforms=android                                                          \
+    -Dplatform-sdk-version=$(PLATFORM_SDK_VERSION)                               \
+    -Dgallium-drivers=$(subst $(space),$(comma),$(BOARD_MESA3D_GALLIUM_DRIVERS)) \
+    -Dvulkan-drivers=$(subst $(space),$(comma),$(subst radeon,amd,$(BOARD_MESA3D_VULKAN_DRIVERS)))   \
+    -Dgbm=$(if $(BOARD_MESA3D_BUILD_LIBGBM),enabled,disabled)                    \
+    -Degl=$(if $(BOARD_MESA3D_GALLIUM_DRIVERS),enabled,disabled)                 \
+    -Dllvm=$(if $(MESA3D_USES_LLVM),enabled,disabled)                            \
+    -Dcpp_rtti=false                                                             \
+    -Dlmsensors=disabled                                                         \
+    -Dandroid-libbacktrace=disabled                                              \
+    $(BOARD_MESA3D_EXTRA_MESON_ARGS)
 
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(BOARD_MESA3D_SRC_DIR)/src/gbm/main
 AOSPEXT_EXPORT_INSTALLED_INCLUDE_DIRS := vendor/include

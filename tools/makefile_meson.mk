@@ -1,5 +1,6 @@
 #!/usr/bin/make
 MESON_DEFS:=[PLACE_FOR_MESON_DEFS]
+LLVM_CONFIG:=$(OUT_BASE_DIR)/../LLVM/build/NATIVE/bin/llvm-config
 
 CONFIGURE_TARGET:=./logs/3.configure.log
 BUILD_TARGET:=./logs/4.build.log
@@ -13,6 +14,7 @@ $(CONFIGURE_TARGET): $(PATCH_TARGET)
 	@echo "[constants]" > $(OUT_BASE_DIR)/gen/meson_aosp_cross.out
 	@echo "base_dir='$(OUT_BASE_DIR)'" >> $(OUT_BASE_DIR)/gen/meson_aosp_cross.out
 	@echo "llvm_dir='$(LLVM_DIR)'" >> $(OUT_BASE_DIR)/gen/meson_aosp_cross.out
+	@echo "llvm_config='$(LLVM_CONFIG)'" >> $(OUT_BASE_DIR)/gen/meson_aosp_cross.out
 	@cat $(OUT_BASE_DIR)/gen/meson_aosp_cross >> $(OUT_BASE_DIR)/gen/meson_aosp_cross.out
 	@(cd $(OUT_SRC_DIR) && meson setup $(OUT_BUILD_DIR) --cross-file $(OUT_BASE_DIR)/gen/meson_aosp_cross.out $(MESON_DEFS)) &> $@.tmp || (cat $@.tmp && exit 1)
 	@mv $@.tmp $@ -f
