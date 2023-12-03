@@ -20,7 +20,7 @@ FFMPEG_DEFINITIONS := \
     --disable-avdevice \
     --disable-postproc \
     --disable-avfilter \
-    $(FFMPEG_EXTRA_CONFIGURE_OPTIONS)
+    $(BOARD_FFMPEG_EXTRA_CONFIGURE_OPTIONS)
 
 # Format: TYPE:REL_PATH_TO_INSTALL_ARTIFACT:VENDOR_SUBDIR:MODULE_NAME:SYMLINK_SUFFIX
 # TYPE one of: lib, bin, etc
