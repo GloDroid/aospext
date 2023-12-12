@@ -45,6 +45,21 @@ AOSPEXT_GEN_TARGETS += \
 
 endif
 
+# Gralloc5
+ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 34; echo $$?), 0)
+
+LOCAL_HEADER_LIBRARIES += libbase_headers libimapper_stablec libimapper_providerutils
+LOCAL_SHARED_LIBRARIES += libbinder_ndk android.hardware.graphics.allocator-V2-ndk
+LOCAL_STATIC_LIBRARIES += libaidlcommonsupport
+AOSPEXT_GEN_TARGETS += \
+    bin:hw/android.hardware.graphics.allocator-service.minigbm_gd:hw:android.hardware.graphics.allocator-service.minigbm_gd: \
+    lib:mapper.minigbm_gd.so::mapper.minigbm_gd: \
+    etc:init/allocator_gd.rc:init:android.hardware.graphics.allocator_gd.rc: \
+    etc:vintf/manifest/allocator.xml:vintf/manifest:android.hardware.graphics.allocator_gd.xml: \
+    etc:vintf/manifest/mapper.minigbm_gd.xml:vintf/manifest:mapper.minigbm_gd.xml: \
+
+endif
+
 LOCAL_MULTILIB := first
 include $(LOCAL_PATH)/aospext_cross_compile.mk
 TMP_AOSPEXT_TARGET_FIRST:=$(AOSPEXT_INTERNAL_BUILD_TARGET)
