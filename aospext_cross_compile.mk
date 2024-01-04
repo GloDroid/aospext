@@ -10,6 +10,8 @@
 # AOSPEXT_GEN_PKGCONFIGS (list: "pkg1:version pkg2:version", optional)
 # FFMPEG_DEFINITIONS (optional)
 # MESON_BUILD_ARGUMENTS (optional)
+# CMAKE_ARGUMENTS (optional)
+# CMAKE_SRC_SUBDIR (optional)
 #
 # Inputs set by aospext_get_buildflags.mk
 # AOSPEXT_ARCH_PREFIX
@@ -50,6 +52,10 @@ $(AOSPEXT_INTERNAL_BUILD_TARGET): CARGO_RUST_TARGET  := $(subst arm64,aarch64,$(
 
 # ffmpeg
 $(AOSPEXT_INTERNAL_BUILD_TARGET): FFMPEG_DEFINITIONS  := $(FFMPEG_DEFINITIONS)
+
+# cmake
+$(AOSPEXT_INTERNAL_BUILD_TARGET): CMAKE_ARGUMENTS  := $(CMAKE_ARGUMENTS)
+$(AOSPEXT_INTERNAL_BUILD_TARGET): CMAKE_SRC_SUBDIR  := $(CMAKE_SRC_SUBDIR)
 
 # dirs
 $(AOSPEXT_INTERNAL_BUILD_TARGET): AOSP_FLAGS_DIR_OUT := $(call relative-to-absolute,$(AOSP_FLAGS_DIR_OUT))
@@ -118,6 +124,13 @@ $(AOSPEXT_INTERNAL_BUILD_TARGET): $(AOSP_FLAGS_DIR_OUT)/.sharedlib.timestamp
 	sed -i \
 		-e 's#\[PLACE_FOR_FFMPEG_DEFINITIONS\]#--libdir=/vendor/lib$(LIBDIR_SUFFIX) $(FFMPEG_DEFINITIONS)#g' \
 		-e 's#\[PLACE_FOR_FFMPEG_CPU_FAMILY\]#$(AOSPEXT_CPU_FAMILY)#g' \
+		$(AOSPEXT_ABS_OUT_DIR)/project_specific.mk
+
+# For cmake build system
+	sed -i \
+		-e 's#\[PLACE_FOR_CMAKE_ARGS\]#$(CMAKE_ARGUMENTS)#g' \
+		-e 's#\[PLACE_FOR_LIBDIR_SUFFIX\]#$(LIBDIR_SUFFIX)#g' \
+		-e 's#\[PLACE_FOR_CMAKE_SRC_SUBDIR\]#$(CMAKE_SRC_SUBDIR)#g' \
 		$(AOSPEXT_ABS_OUT_DIR)/project_specific.mk
 
 	# Build project
