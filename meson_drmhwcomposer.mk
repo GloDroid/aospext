@@ -15,8 +15,8 @@ AOSPEXT_PROJECT_NAME := DRMHWCOMPOSER
 AOSPEXT_BUILD_SYSTEM := meson
 
 LOCAL_HEADER_LIBRARIES :=
-LOCAL_SHARED_LIBRARIES := libcutils libdrm libhardware libhidlbase liblog libsync libui libutils
-AOSPEXT_GEN_PKGCONFIGS := cutils drm hardware hidlbase log sync ui utils
+LOCAL_SHARED_LIBRARIES := libbase libcutils libdrm libhardware libhidlbase liblog libsync libui libutils
+AOSPEXT_GEN_PKGCONFIGS := base cutils drm hardware hidlbase log sync ui utils
 
 MESON_BUILD_ARGUMENTS := \
 
