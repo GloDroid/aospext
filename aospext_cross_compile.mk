@@ -41,7 +41,12 @@ $(AOSPEXT_INTERNAL_BUILD_TARGET): AOSPEXT_CPU_FAMILY     := $(subst arm64,aarch6
 $(AOSPEXT_INTERNAL_BUILD_TARGET): LIBDIR_SUFFIX:=$(if $(TARGET_IS_64_BIT),$(if $(filter 64 first,$(LOCAL_MULTILIB)),64))
 
 # meson
+ifeq ($(TARGET_$(AOSPEXT_ARCH_PREFIX)ARCH), x86)
+$(AOSPEXT_INTERNAL_BUILD_TARGET): MESON_RUST_TARGET  := $(subst x86,i686,$(TARGET_$(AOSPEXT_ARCH_PREFIX)ARCH))-linux-android
+else
 $(AOSPEXT_INTERNAL_BUILD_TARGET): MESON_RUST_TARGET  := $(subst arm64,aarch64,$(TARGET_$(AOSPEXT_ARCH_PREFIX)ARCH))-linux-android
+endif
+
 $(AOSPEXT_INTERNAL_BUILD_TARGET): MESON_BUILD_ARGUMENTS:=--prefix /vendor --libdir lib$(LIBDIR_SUFFIX) --datadir etc/shared --libexecdir bin \
                                                          --sbindir bin --localstatedir=/mnt/var --buildtype=debug $(MESON_BUILD_ARGUMENTS)
 
