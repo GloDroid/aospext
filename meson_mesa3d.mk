@@ -62,7 +62,7 @@ AOSPEXT_GEN_TARGETS += lib:$(MESA_LIBGBM_NAME).so::$(MESA_LIBGBM_NAME):
 endif
 
 AOSPEXT_GEN_TARGETS += \
-    $(foreach driver,$(BOARD_MESA3D_VULKAN_DRIVERS), lib:libvulkan_$(MESA_VK_LIB_SUFFIX_$(driver)).so:hw:vulkan.$(driver):)
+    $(foreach driver,$(BOARD_MESA3D_VULKAN_DRIVERS), lib:libvulkan_$(MESA_VK_LIB_SUFFIX_$(driver)).so:hw:vulkan.$(MESA_VK_LIB_SUFFIX_$(driver)):)
 
 include $(CLEAR_VARS)
 
