@@ -81,6 +81,8 @@ $(AOSPEXT_INTERNAL_BUILD_TARGET): $(AOSP_FLAGS_DIR_OUT)/.sharedlib.timestamp
 	ln -sf ./wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrap_c
 	ln -sf ./wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrap_cxx
 	ln -sf ./wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrap_rust_ld
+	ln -sf ./wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrap_rust_c
+	ln -sf ./wrapper.sh $(AOSP_FLAGS_DIR_OUT)/wrap_rust_cxx
 	cp $(MY_ABS_PATH)/tools/gen_aospless_dir.py $(AOSPEXT_ABS_OUT_DIR)/gen_aospless_dir.py
 
 	cp $(MY_ABS_PATH)/tools/makefile_base.mk $(AOSPEXT_ABS_OUT_DIR)/Makefile

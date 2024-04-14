@@ -4,7 +4,7 @@
 #
 # AOSPEXT project (https://github.com/GloDroid/aospext)
 #
-# Copyright (C) 2021-2022 Roman Stratiienko (r.stratiienko@gmail.com)
+# Copyright (C) 2021-2024 Roman Stratiienko (r.stratiienko@gmail.com)
 
 COMPILER=$( basename -- "$0"; )
 LOCAL_PATH=$( dirname -- "$0"; )
@@ -29,6 +29,10 @@ if [ "${COMPILER}" == "wrap_c" ]; then
     ARGS="${CC} $@"
 elif [ "${COMPILER}" == "wrap_cxx" ]; then
     ARGS="${CXX} $@"
+elif [ "${COMPILER}" == "wrap_rust_c" ]; then
+    ARGS="${CC} ${CFLAGS} $@"
+elif [ "${COMPILER}" == "wrap_rust_cxx" ]; then
+    ARGS="${CXX} ${CPPFLAGS} $@"
 elif [ "${COMPILER}" == "wrap_rust_ld" ]; then
     ARGS="${CC} $@ ${LINK_ARGS} -Wl,--unresolved-symbols=ignore-all"
 else
