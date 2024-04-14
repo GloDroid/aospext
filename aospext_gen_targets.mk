@@ -3,7 +3,7 @@
 # AOSPEXT project (https://github.com/GloDroid/aospext)
 #
 # Copyright (C) 2021 GlobalLogic Ukraine
-# Copyright (C) 2021-2022 Roman Stratiienko (r.stratiienko@gmail.com)
+# Copyright (C) 2021-2024 Roman Stratiienko (r.stratiienko@gmail.com)
 
 # Inputs:
 # AOSPEXT_GEN_TARGETS array
@@ -20,6 +20,8 @@ __TMP_C_INCLUDE_DIRS += $(foreach dir,$(AOSPEXT_EXPORT_INSTALLED_INCLUDE_DIRS), 
 __TMP_MULTILIB := $(LOCAL_MULTILIB)
 __TMP_SHARED_LIBRARIES := $(LOCAL_SHARED_LIBRARIES)
 
+__TMP_BASE_DIR := $(if $(filter true,$(AOSPEXT_VENDOR_MODULE)),vendor,system)
+
 __TMP_CLASSES_bin := EXECUTABLES
 __TMP_CLASSES_lib := SHARED_LIBRARIES
 __TMP_CLASSES_libetc := ETC
@@ -28,10 +30,10 @@ __TMP_SUFFIX_bin :=
 __TMP_SUFFIX_lib := .so
 __TMP_SUFFIX_libetc :=
 __TMP_SUFFIX_etc :=
-__TMP_DIR_bin := vendor/bin
-__TMP_DIR_lib := vendor/lib$(if $(TARGET_IS_64_BIT),$(if $(filter 64 first,$(LOCAL_MULTILIB)),64))
-__TMP_DIR_libetc := vendor/lib$(if $(TARGET_IS_64_BIT),$(if $(filter 64 first,$(LOCAL_MULTILIB)),64))
-__TMP_DIR_etc := vendor/etc
+__TMP_DIR_bin := $(__TMP_BASE_DIR)/bin
+__TMP_DIR_lib := $(__TMP_BASE_DIR)/lib$(if $(TARGET_IS_64_BIT),$(if $(filter 64 first,$(LOCAL_MULTILIB)),64))
+__TMP_DIR_libetc := $(__TMP_BASE_DIR)/lib$(if $(TARGET_IS_64_BIT),$(if $(filter 64 first,$(LOCAL_MULTILIB)),64))
+__TMP_DIR_etc := $(__TMP_BASE_DIR)/etc
 
 define unwrap_target
 __TYPE := $(word 1,$1)
@@ -54,7 +56,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE_CLASS := $(__TMP_CLASSES_$(__TYPE))
 LOCAL_MODULE_SUFFIX := $(__TMP_SUFFIX_$(__TYPE))
 LOCAL_MODULE := $(__MODULE)
-LOCAL_VENDOR_MODULE := true
+LOCAL_VENDOR_MODULE := $(AOSPEXT_VENDOR_MODULE)
 LOCAL_MODULE_PATH := $(__PATH_OVERRIDE)
 LOCAL_MODULE_RELATIVE_PATH := $(__SUBDIR)
 LOCAL_PREBUILT_MODULE_FILE := $(__TMP_AOSPEXT_PROJECT_INSTALL_DIR)/$(__TMP_DIR_$(__TYPE))/$(__PATHNAME)
