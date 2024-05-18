@@ -11,7 +11,7 @@ NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
 
 CONFIGURE_CMD:=configure \
     --prefix=/vendor \
-    --cc=$(OUT_BASE_DIR)/toolchain_wrapper/wrap_c \
+    --cc=$(OUT_BASE_DIR)/toolchain_wrapper/wrap_clang \
     --arch=$(FFMPEG_CPU_FAMILY) --target-os=android \
     --extra-cflags=[C_ARGS] \
     --extra-ldflags=[C_LINK_ARGS] \

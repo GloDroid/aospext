@@ -14,8 +14,8 @@ INSTALL_TARGET:=./logs/5.install.log
 CARGO_ARGS+=$(if $(wildcard $(SRC_DIR)/vendor),--offline)
 
 CARGO_ENV := \
-    CC=$(LOCAL_PATH)/toolchain_wrapper/wrap_rust_c \
-    CXX=$(LOCAL_PATH)/toolchain_wrapper/wrap_rust_cxx \
+    CC=$(LOCAL_PATH)/toolchain_wrapper/wrap_rust_clang \
+    CXX=$(LOCAL_PATH)/toolchain_wrapper/wrap_rust_clang++ \
     AR=$(if $(LLVM_DIR),$(LLVM_DIR)/,)llvm-ar \
 
 configure: ## Configure the project

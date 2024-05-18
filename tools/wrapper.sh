@@ -25,13 +25,13 @@ else
     extract_flags exec
 fi
 
-if [ "${COMPILER}" == "wrap_c" ]; then
+if [ "${COMPILER}" == "wrap_clang" ]; then
     ARGS="${CC} $@"
-elif [ "${COMPILER}" == "wrap_cxx" ]; then
+elif [ "${COMPILER}" == "wrap_clang++" ]; then
     ARGS="${CXX} $@"
-elif [ "${COMPILER}" == "wrap_rust_c" ]; then
+elif [ "${COMPILER}" == "wrap_rust_clang" ]; then
     ARGS="${CC} ${CFLAGS} $@"
-elif [ "${COMPILER}" == "wrap_rust_cxx" ]; then
+elif [ "${COMPILER}" == "wrap_rust_clang++" ]; then
     ARGS="${CXX} ${CPPFLAGS} $@"
 elif [ "${COMPILER}" == "wrap_rust_ld" ]; then
     ARGS="${CC} $@ ${LINK_ARGS} -Wl,--unresolved-symbols=ignore-all"
