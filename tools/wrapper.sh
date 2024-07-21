@@ -47,6 +47,7 @@ ARGS="${ARGS//-ldl/}"
 ARGS="${ARGS//-lgcc/}"
 ARGS="${ARGS//-llog/}"
 ARGS="${ARGS//-lm/}"
+ARGS="${ARGS//-lstdc++/}"
 ARGS="${ARGS//-lunwind/}"
 
 ARGS="${ARGS/\[C_ARGS\]/${CFLAGS}}"
