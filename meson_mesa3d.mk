@@ -14,6 +14,14 @@ AOSPEXT_PROJECT_NAME := MESA3D
 AOSPEXT_BUILD_SYSTEM := meson
 
 LIBDRM_VERSION = $(shell cat external/libdrm/meson.build | grep -o "\<version\>\s*:\s*'\w*\.\w*\.\w*'" | grep -o "\w*\.\w*\.\w*" | head -1)
+MESA3D_VERSION = $(shell cat $(BOARD_MESA3D_SRC_DIR)/VERSION | cut -d '.' -f 1-2)
+MESA3D_GALLIUM_LIBDIR :=
+MESA3D_POPULATE_SYMLINKS :=
+
+ifeq ($(shell expr $(MESA3D_VERSION) \<= 24.1), 1)
+MESA3D_GALLIUM_LIBDIR := dri
+MESA3D_POPULATE_SYMLINKS := true
+endif
 
 MESA_VK_LIB_SUFFIX_amd := radeon
 MESA_VK_LIB_SUFFIX_intel := intel
@@ -50,7 +58,7 @@ AOSPEXT_GEN_TARGETS := $(BOARD_MESA3D_EXTRA_TARGETS)
 
 ifneq ($(strip $(BOARD_MESA3D_GALLIUM_DRIVERS)),)
 AOSPEXT_GEN_TARGETS += \
-    lib:libgallium_dri.so:dri:libgallium_dri:   \
+    lib:libgallium_dri.so:$(MESA3D_GALLIUM_LIBDIR):libgallium_dri:   \
     lib:libglapi.so::libglapi:                  \
     lib:libEGL.so:egl:libEGL_mesa:              \
     lib:libGLESv1_CM.so:egl:libGLESv1_CM_mesa:  \
@@ -133,6 +141,7 @@ endif
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(BOARD_MESA3D_SRC_DIR)/src/gbm/main
 AOSPEXT_EXPORT_INSTALLED_INCLUDE_DIRS := vendor/include
 
+ifneq ($(MESA3D_POPULATE_SYMLINKS),)
 define populate_dri_symlinks
 # -------------------------------------------------------------------------------
 # Mesa3d installs every dri target as a separate shared library, but for gallium drivers all
@@ -152,20 +161,25 @@ endif
 endef
 
 #-------------------------------------------------------------------------------
+endif # MESA3D_POPULATE_SYMLINKS
 
 LOCAL_MULTILIB := first
 include $(LOCAL_PATH)/aospext_cross_compile.mk
+ifneq ($(MESA3D_POPULATE_SYMLINKS),)
 SYMLINKS_TARGET := $($(AOSPEXT_ARCH_PREFIX)TARGET_OUT_VENDOR_SHARED_LIBRARIES)/dri/.symlinks.timestamp
 $(eval $(call populate_dri_symlinks))
 FIRSTARCH_SYMLINKS_TARGET := $(SYMLINKS_TARGET)
+endif # MESA3D_POPULATE_SYMLINKS
 FIRSTARCH_BUILD_TARGET := $(AOSPEXT_INTERNAL_BUILD_TARGET)
 
 ifdef TARGET_2ND_ARCH
 LOCAL_MULTILIB := 32
 include $(LOCAL_PATH)/aospext_cross_compile.mk
+ifneq ($(MESA3D_POPULATE_SYMLINKS),)
 SYMLINKS_TARGET := $($(AOSPEXT_ARCH_PREFIX)TARGET_OUT_VENDOR_SHARED_LIBRARIES)/dri/.symlinks.timestamp
 $(eval $(call populate_dri_symlinks))
 SECONDARCH_SYMLINKS_TARGET := $(SYMLINKS_TARGET)
+endif # MESA3D_POPULATE_SYMLINKS
 SECONDARCH_BUILD_TARGET := $(AOSPEXT_INTERNAL_BUILD_TARGET)
 endif
 
