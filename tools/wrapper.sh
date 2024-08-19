@@ -42,6 +42,7 @@ fi
 
 # Filter-out libraries, since we're not using NDK but adding .so directly
 ARGS="${ARGS//-lc++_shared/}"
+ARGS="${ARGS//-lc++/}"
 ARGS="${ARGS//-lc/}"
 ARGS="${ARGS//-ldl/}"
 ARGS="${ARGS//-lgcc/}"
