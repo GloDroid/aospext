@@ -39,6 +39,7 @@ MESON_BUILD_ARGUMENTS := \
     -Dgallium-drivers=$(subst $(space),$(comma),$(BOARD_MESA3D_GALLIUM_DRIVERS)) \
     -Dvulkan-drivers=$(subst $(space),$(comma),$(subst radeon,amd,$(BOARD_MESA3D_VULKAN_DRIVERS)))   \
     -Dgbm=enabled                                                                \
+	-Dgbm-backends-path=/vendor/lib$(if $(TARGET_IS_64_BIT),$(if $(filter 64 first,$(LOCAL_MULTILIB)),64)) \
     -Degl=$(if $(BOARD_MESA3D_GALLIUM_DRIVERS),enabled,disabled)                 \
     -Dllvm=$(if $(MESON_GEN_LLVM_STUB),enabled,disabled)                         \
     -Dcpp_rtti=false                                                             \
@@ -68,6 +69,7 @@ endif
 
 ifneq ($(filter true, $(BOARD_MESA3D_BUILD_LIBGBM)),)
 AOSPEXT_GEN_TARGETS += lib:$(MESA_LIBGBM_NAME).so::$(MESA_LIBGBM_NAME):
+AOSPEXT_GEN_TARGETS += lib:gbm/dri_gbm.so::dri_gbm:
 endif
 
 AOSPEXT_GEN_TARGETS += \
