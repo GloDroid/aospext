@@ -45,7 +45,8 @@ MESON_BUILD_ARGUMENTS := \
     -Dcpp_rtti=false                                                             \
     -Dlmsensors=disabled                                                         \
     -Dandroid-libbacktrace=disabled                                              \
-    $(BOARD_MESA3D_EXTRA_MESON_ARGS)
+    $(BOARD_MESA3D_EXTRA_MESON_ARGS)                                             \
+    $(BOARD_MESA3D_MESON_ARGS)
 
 ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 30; echo $$?), 0)
 MESA_LIBGBM_NAME := libgbm_mesa
