@@ -30,12 +30,30 @@ AOSPEXT_GEN_TARGETS := \
 ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 33; echo $$?), 0)
 
 LOCAL_HEADER_LIBRARIES += android.hardware.graphics.composer3-command-buffer
-LOCAL_SHARED_LIBRARIES += android.hardware.graphics.composer3-V1-ndk libbinder libbinder_ndk
-AOSPEXT_GEN_PKGCONFIGS += android.hardware.graphics.composer3-V1-ndk binder binder_ndk
+LOCAL_SHARED_LIBRARIES += \
+    libbinder \
+    libbinder_ndk \
+    android.hardware.graphics.composer@2.1-resources \
+    android.hardware.graphics.composer@2.2-resources \
+
+LOCAL_STATIC_LIBRARIES += libaidlcommonsupport
+AOSPEXT_GEN_PKGCONFIGS += \
+    binder binder_ndk aidlcommonsupport \
+    android.hardware.graphics.composer@2.1-resources \
+    android.hardware.graphics.composer@2.2-resources \
+
 AOSPEXT_GEN_TARGETS += \
     bin:hw/android.hardware.composer.hwc3-service.drm:hw:android.hardware.composer.hwc3-service.drm: \
     etc:init/hwc3-drm.rc:init:hwc3-drm.rc: \
     etc:vintf/manifest/hwc3-drm.xml:vintf/manifest:hwc3-drm.xml: \
+
+ifeq ($(shell test $(PLATFORM_SDK_VERSION) -le 33; echo $$?), 0)
+LOCAL_SHARED_LIBRARIES += android.hardware.graphics.composer3-V1-ndk
+else ifeq ($(shell test $(PLATFORM_SDK_VERSION) -le 34; echo $$?), 0)
+LOCAL_SHARED_LIBRARIES += android.hardware.graphics.composer3-V2-ndk
+else
+LOCAL_SHARED_LIBRARIES += android.hardware.graphics.composer3-V3-ndk
+endif
 
 endif
 
