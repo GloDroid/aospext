@@ -4,7 +4,7 @@
 AOSP_ROOT:=$(shell pwd)
 AOSP_OUT_DIR:=$(shell pwd)
 SRC_DIR:=./src
-PATCHES_DIRS:=patches
+PATCHES_DIRS:=
 LLVM_DIR:=
 
 ifeq ($(AOSPLESS),)
