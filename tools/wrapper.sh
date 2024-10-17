@@ -10,6 +10,8 @@ COMPILER=$( basename -- "$0"; )
 LOCAL_PATH=$( dirname -- "$0"; )
 BASE_DIR=$( cd -- "${LOCAL_PATH}/.."; pwd; )
 
+IS_RUST=0
+
 extract_flags() {
     # $1 - Flag files prefix (sharedlib or exec)
     CC=$(cat ${LOCAL_PATH}/$1.cc)
@@ -31,25 +33,30 @@ elif [ "${COMPILER}" == "wrap_clang++" ]; then
     ARGS="${CXX} $@"
 elif [ "${COMPILER}" == "wrap_rust_clang" ]; then
     ARGS="${CC} ${CFLAGS} $@"
+    IS_RUST=1
 elif [ "${COMPILER}" == "wrap_rust_clang++" ]; then
     ARGS="${CXX} ${CPPFLAGS} $@"
+    IS_RUST=1
 elif [ "${COMPILER}" == "wrap_rust_ld" ]; then
     ARGS="${CC} $@ ${LINK_ARGS} -Wl,--unresolved-symbols=ignore-all"
+    IS_RUST=1
 else
     echo "Unknown compiler: ${COMPILER}"
     exit 1
 fi
 
-# Filter-out libraries, since we're not using NDK but adding .so directly
-ARGS="${ARGS//-lc++_shared/}"
-ARGS="${ARGS//-lc++/}"
-ARGS="${ARGS//-lc/}"
-ARGS="${ARGS//-ldl/}"
-ARGS="${ARGS//-lgcc/}"
-ARGS="${ARGS//-llog/}"
-ARGS="${ARGS//-lm/}"
-ARGS="${ARGS//-lstdc++/}"
-ARGS="${ARGS//-lunwind/}"
+# For target builds and Rust, filter-out libraries, since we're not using NDK but adding .so directly
+if [[ " $@ " =~ .*\ -target\ .* ]] || [[ ${IS_RUST} -eq 1 ]]; then
+    ARGS="${ARGS//-lc++_shared/}"
+    ARGS="${ARGS//-lc++/}"
+    ARGS="${ARGS//-lc/}"
+    ARGS="${ARGS//-ldl/}"
+    ARGS="${ARGS//-lgcc/}"
+    ARGS="${ARGS//-llog/}"
+    ARGS="${ARGS//-lm/}"
+    ARGS="${ARGS//-lstdc++/}"
+    ARGS="${ARGS//-lunwind/}"
+fi
 
 ARGS="${ARGS/\[C_ARGS\]/${CFLAGS}}"
 ARGS="${ARGS/\[CPP_ARGS\]/${CPPFLAGS}}"
