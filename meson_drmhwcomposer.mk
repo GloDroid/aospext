@@ -43,7 +43,7 @@ AOSPEXT_GEN_PKGCONFIGS += \
     android.hardware.graphics.composer@2.2-resources \
 
 AOSPEXT_GEN_TARGETS += \
-    bin:hw/android.hardware.composer.hwc3-service.drm:hw:android.hardware.composer.hwc3-service.drm: \
+    bin:hw/android.hardware.composer.hwc3-service.drm:hw:android.hardware.composer.hwc3-service.drm_aospext: \
     etc:init/hwc3-drm.rc:init:hwc3-drm.rc: \
     etc:vintf/manifest/hwc3-drm.xml:vintf/manifest:hwc3-drm.xml: \
 
