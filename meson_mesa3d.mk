@@ -132,13 +132,16 @@ LOCAL_SHARED_LIBRARIES += libLLVM12
 endif
 
 ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 30; echo $$?), 0)
-LOCAL_SHARED_LIBRARIES += \
-    android.hardware.graphics.mapper@4.0 \
-    libgralloctypes \
-    libhidlbase \
-    libutils
+LOCAL_SHARED_LIBRARIES += libgralloctypes libutils
 
+ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 35; echo $$?), 0)
+LOCAL_SHARED_LIBRARIES += libui
+AOSPEXT_GEN_PKGCONFIGS += ui
+else
+LOCAL_SHARED_LIBRARIES += libhidlbase android.hardware.graphics.mapper@4.0
 AOSPEXT_GEN_PKGCONFIGS += android.hardware.graphics.mapper:4.0
+endif
+
 endif
 
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(BOARD_MESA3D_SRC_DIR)/src/gbm/main
