@@ -212,7 +212,9 @@ $(strip \
 )
 endef
 
-LOCAL_VENDOR_MODULE := true
+LOCAL_VENDOR_MODULE := $(if $(filter vendor,$(AOSPEXT_PARTITION)),true)
+LOCAL_PRODUCT_MODULE := $(if $(filter product,$(AOSPEXT_PARTITION)),true)
+LOCAL_SYSTEM_EXT_MODULE := $(if $(filter system_ext,$(AOSPEXT_PARTITION)),true)
 
 # Extract flags for shared libraries
 
