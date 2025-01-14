@@ -18,7 +18,7 @@ LOCAL_HEADER_LIBRARIES :=
 LOCAL_SHARED_LIBRARIES := libbase libcutils libdrm libhardware libhidlbase liblog libsync libui libutils
 AOSPEXT_GEN_PKGCONFIGS := base cutils drm hardware hidlbase log sync ui utils
 
-ifneq ($(wildcard external/libdisplay_info),)
+ifneq ($(wildcard external/libdisplay-info),)
 LOCAL_STATIC_LIBRARIES += libdisplay_info
 AOSPEXT_GEN_PKGCONFIGS += display_info
 endif
