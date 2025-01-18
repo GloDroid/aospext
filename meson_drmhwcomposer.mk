@@ -49,8 +49,8 @@ AOSPEXT_GEN_PKGCONFIGS += \
 
 AOSPEXT_GEN_TARGETS += \
     bin:hw/android.hardware.composer.hwc3-service.drm:hw:android.hardware.composer.hwc3-service.drm_aospext: \
-    etc:init/hwc3-drm.rc:init:hwc3-drm.rc: \
-    etc:vintf/manifest/hwc3-drm.xml:vintf/manifest:hwc3-drm.xml: \
+    etc:init/hwc3-drm.rc:init:hwc3-drm_aospext.rc: \
+    etc:vintf/manifest/hwc3-drm.xml:vintf/manifest:hwc3-drm_aospext.xml: \
 
 ifeq ($(shell test $(PLATFORM_SDK_VERSION) -le 33; echo $$?), 0)
 LOCAL_SHARED_LIBRARIES += android.hardware.graphics.composer3-V1-ndk
