@@ -60,11 +60,14 @@ AOSPEXT_GEN_TARGETS := $(BOARD_MESA3D_EXTRA_TARGETS)
 ifneq ($(strip $(BOARD_MESA3D_GALLIUM_DRIVERS)),)
 AOSPEXT_GEN_TARGETS += \
     lib:libgallium_dri.so:$(MESA3D_GALLIUM_LIBDIR):libgallium_dri:   \
-    lib:libglapi.so::libglapi:                  \
     lib:libEGL.so:egl:libEGL_mesa:              \
     lib:libGLESv1_CM.so:egl:libGLESv1_CM_mesa:  \
     lib:libGLESv2.so:egl:libGLESv2_mesa:        \
 
+endif
+
+ifeq ($(shell expr $(MESA3D_VERSION) \<= 25.0), 1)
+AOSPEXT_GEN_TARGETS += lib:libglapi.so::libglapi:
 endif
 
 ifneq ($(filter true, $(BOARD_MESA3D_BUILD_LIBGBM)),)
