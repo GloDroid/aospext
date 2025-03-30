@@ -66,7 +66,7 @@ AOSPEXT_GEN_TARGETS += \
 
 endif
 
-ifeq ($(shell expr $(MESA3D_VERSION) \<= 25.0), 1)
+ifeq ($(shell expr $(MESA3D_VERSION) \< 25.0), 1)
 AOSPEXT_GEN_TARGETS += lib:libglapi.so::libglapi:
 endif
 
