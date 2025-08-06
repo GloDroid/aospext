@@ -56,8 +56,10 @@ ifeq ($(shell test $(PLATFORM_SDK_VERSION) -le 33; echo $$?), 0)
 LOCAL_SHARED_LIBRARIES += android.hardware.graphics.composer3-V1-ndk
 else ifeq ($(shell test $(PLATFORM_SDK_VERSION) -le 34; echo $$?), 0)
 LOCAL_SHARED_LIBRARIES += android.hardware.graphics.composer3-V2-ndk
-else
+else ifeq ($(shell test $(PLATFORM_SDK_VERSION) -le 35; echo $$?), 0)
 LOCAL_SHARED_LIBRARIES += android.hardware.graphics.composer3-V3-ndk
+else
+LOCAL_SHARED_LIBRARIES += android.hardware.graphics.composer3-V4-ndk
 endif
 
 endif
