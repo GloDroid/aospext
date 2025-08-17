@@ -7,6 +7,7 @@
 LOCAL_PATH := $(call my-dir)
 
 include $(LOCAL_PATH)/cargo_mmradio.mk
+include $(LOCAL_PATH)/cargo_rshwcomposer.mk
 
 include $(LOCAL_PATH)/ffmpeg.mk
 
